@@ -1,0 +1,11 @@
+package com.carmanual.carmanual;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class CarManualApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(CarManualApplication.class, args);
+    }
+}

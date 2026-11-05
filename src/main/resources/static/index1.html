@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarManual Diagnóstico - Seu Manual Inteligente</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: #f5f7fb; }
+        header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 1rem 0; position: fixed; width: 100%; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        nav { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; }
+        .logo { font-size: 1.8rem; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+        .logo span { background: #ffd700; color: #1e3c72; padding: 0.2rem 0.5rem; border-radius: 5px; font-size: 1rem; }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { color: white; text-decoration: none; font-weight: 500; transition: color 0.3s; cursor: pointer; }
+        .nav-links a:hover { color: #ffd700; }
+        .login-section { display: flex; align-items: center; gap: 1rem; }
+        .btn-login, .btn-logout, .primary-btn, .danger-btn, .secondary-btn { border: none; cursor: pointer; font-weight: bold; border-radius: 25px; transition: transform 0.2s ease; }
+        .btn-login { background: #ffd700; color: #1e3c72 !important; padding: 0.6rem 1.4rem; }
+        .user-menu { display: none; align-items: center; gap: 1rem; }
+        .user-menu.active { display: flex; }
+        .user-name { color: white; font-weight: 500; }
+        .btn-logout { background: transparent; color: white; border: 1px solid white; padding: 0.3rem 1rem; }
+        .btn-login:hover, .btn-logout:hover, .primary-btn:hover, .secondary-btn:hover, .danger-btn:hover { transform: translateY(-2px); }
+        .hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8rem 2rem 4rem; text-align: center; }
+        .hero-content { max-width: 800px; margin: 0 auto; }
+        .hero h1 { font-size: 3rem; margin-bottom: 1rem; }
+        .hero p { font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9; }
+        .cta-buttons { display: flex; gap: 1rem; justify-content: center; }
+        .btn { padding: 1rem 2rem; border-radius: 50px; text-decoration: none; font-weight: bold; transition: transform 0.3s; display: inline-block; }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary { background: #ffd700; color: #333; }
+        .btn-secondary { background: transparent; color: white; border: 2px solid white; }
+        section { padding: 5rem 2rem; max-width: 1200px; margin: 0 auto; }
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 3rem; color: #1e3c72; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        .feature-card, .profile-card, .phase, .dashboard-panel, .pricing-card, .tech-item { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+        .feature-card h3, .profile-card h4, .phase h4 { color: #1e3c72; margin-bottom: 1rem; }
+        .feature-icon, .profile-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        .step { text-align: center; position: relative; background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+        .step-number { background: #1e3c72; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-weight: bold; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        .pricing-card { text-align: center; position: relative; }
+        .pricing-card.popular { border: 2px solid #ffd700; transform: scale(1.02); }
+        .popular-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #ffd700; color: #333; padding: 0.3rem 1rem; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
+        .price { font-size: 2.5rem; color: #1e3c72; margin: 1rem 0; }
+        .price small { font-size: 1rem; color: #666; }
+        .pricing-features { list-style: none; margin-top: 1.5rem; }
+        .pricing-features li { padding: 0.5rem 0; border-bottom: 1px solid #eee; }
+        .ai-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 3rem; border-radius: 15px; margin: 2rem auto; max-width: 1200px; }
+        .ai-demo { background: rgba(255,255,255,0.1); padding: 2rem; border-radius: 10px; margin-top: 2rem; }
+        .ai-demo input { width: 100%; padding: 1rem; border: none; border-radius: 8px; margin-bottom: 1rem; font-size: 1rem; }
+        .ai-results { background: rgba(0,0,0,0.25); padding: 1rem; border-radius: 8px; }
+        .result-item { padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.2); display: flex; justify-content: space-between; }
+        .probability { background: #ffd700; color: #333; padding: 0.2rem 0.8rem; border-radius: 15px; font-size: 0.9rem; }
+        .profiles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        .profile-card ul { text-align: left; list-style: none; margin-top: 1rem; }
+        .profile-card li { padding: 0.3rem 0; border-bottom: 1px solid #eee; }
+        .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        .tech-item { text-align: center; }
+        .tech-item h4 { color: #1e3c72; margin-top: 0.5rem; }
+        .mvp-timeline { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        .phase { border-left: 4px solid #1e3c72; }
+        .dashboard { display: none; }
+        .dashboard.active { display: block; }
+        .dashboard-grid { display: grid; grid-template-columns: 320px 1fr; gap: 2rem; }
+        .dashboard-panel { min-height: 350px; }
+        .task-form { display: grid; gap: 1rem; margin-top: 1.5rem; }
+        input, textarea { width: 100%; padding: 0.9rem 1rem; border: 1px solid #d9d9d9; border-radius: 10px; font-size: 1rem; }
+        textarea { min-height: 100px; resize: vertical; }
+        .primary-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0.85rem 1.2rem; }
+        .secondary-btn { background: #eef4ff; color: #1e3c72; padding: 0.85rem 1.2rem; }
+        .danger-btn { background: #d9534f; color: white; padding: 0.7rem 1rem; }
+        .list-tasks { list-style: none; display: grid; gap: 0.8rem; margin-top: 1rem; }
+        .task-item { display: flex; justify-content: space-between; gap: 1rem; padding: 1rem; border-radius: 12px; background: #f7f9ff; border: 1px solid #ebefff; align-items: center; }
+        .task-actions { display: flex; gap: 0.6rem; }
+        .status-box { background: #eef8f1; color: #1f7a45; padding: 0.7rem 1rem; border-radius: 10px; margin-top: 1rem; font-weight: 600; }
+        .error-box { background: #fde8e8; color: #b42318; padding: 0.7rem 1rem; border-radius: 10px; margin-top: 1rem; font-weight: 600; }
+        .hidden { display: none !important; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 2rem; border-radius: 15px; max-width: 420px; width: 90%; position: relative; animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .close-modal { position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem; cursor: pointer; color: #666; }
+        .close-modal:hover { color: #333; }
+        .modal h2 { color: #1e3c72; margin-bottom: 1.5rem; text-align: center; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500; }
+        .form-group input { width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+        .form-group input:focus { outline: none; border-color: #667eea; }
+        .error-message { color: #e74c3c; font-size: 0.9rem; margin-top: 0.5rem; display: none; }
+        .modal-footer { text-align: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee; }
+        .modal-footer button { background: none; border: 0; color: #667eea; text-decoration: underline; cursor: pointer; font: inherit; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 1rem auto; display: none; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        footer { background: #1e3c72; color: white; padding: 3rem 2rem 1rem; }
+        .footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+        .footer-section h4 { margin-bottom: 1rem; color: #ffd700; }
+        .footer-section ul { list-style: none; }
+        .footer-section li { margin-bottom: 0.5rem; }
+        .footer-section a { color: white; text-decoration: none; opacity: 0.8; transition: opacity 0.3s; cursor: pointer; }
+        .footer-section a:hover { opacity: 1; }
+        .copyright { text-align: center; margin-top: 3rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; opacity: 0.8; }
+        @media (max-width: 768px) { .nav-links { display: none; } .hero h1 { font-size: 2rem; } .cta-buttons { flex-direction: column; } .dashboard-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo" onclick="scrollToTop()">
+                🚗 CarManual
+                <span>Diagnóstico</span>
+            </div>
+            <ul class="nav-links">
+                <li><a onclick="scrollToSection('funcionalidades')">Funcionalidades</a></li>
+                <li><a onclick="scrollToSection('como-funciona')">Como Funciona</a></li>
+                <li><a onclick="scrollToSection('dashboard')">Dashboard</a></li>
+                <li><a onclick="scrollToSection('planos')">Planos</a></li>
+                <li><a onclick="scrollToSection('tecnologia')">Tecnologia</a></li>
+                <li><a onclick="scrollToSection('contato')">Contato</a></li>
+            </ul>
+            <div class="login-section">
+                <button class="btn-login" onclick="openLoginModal()" id="loginBtn">Entrar</button>
+                <div class="user-menu" id="userMenu">
+                    <span class="user-name" id="userName"></span>
+                    <button class="btn-logout" onclick="logout()">Sair</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeLoginModal()">&times;</span>
+            <h2 id="modalTitle">Entrar</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Usuário</label>
+                    <input type="text" id="username" placeholder="Digite seu usuário" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" placeholder="Digite sua senha" required>
+                </div>
+                <div class="error-message" id="loginError"></div>
+                <div class="loader" id="loginLoader"></div>
+                <button type="submit" class="primary-btn" id="submitBtn" style="width: 100%; margin-top: 1rem;">Entrar</button>
+            </form>
+            <div class="modal-footer">
+                <button type="button" id="toggleAuthMode">Não tem uma conta? Cadastre-se</button>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Seu Manual Inteligente</h1>
+                <p>Descubra problemas do seu carro usando IA e manuais colaborativos. Cadastre, compartilhe e diagnostique!</p>
+                <div class="cta-buttons">
+                    <a class="btn btn-primary" onclick="openLoginModal()">Começar Agora</a>
+                    <a class="btn btn-secondary" onclick="scrollToSection('ia-diagnostico')">Ver Demonstração</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="funcionalidades">
+            <h2 class="section-title">Funcionalidades Principais</h2>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon">🔍</div><h3>Diagnóstico Inteligente</h3><p>Descreva o problema e a IA busca possíveis causas com base no manual do veículo.</p></div>
+                <div class="feature-card"><div class="feature-icon">📚</div><h3>Biblioteca Pessoal</h3><p>Organize os manuais e consultas que você acessa com frequência em um só lugar.</p></div>
+                <div class="feature-card"><div class="feature-icon">🤝</div><h3>Sistema Colaborativo</h3><p>Cadastre registros e compartilhe conhecimento com a comunidade automotiva.</p></div>
+                <div class="feature-card"><div class="feature-icon">👨‍🔧</div><h3>Rede de Mecânicos</h3><p>Profissionais validam diagnósticos e sugerem soluções práticas para cada caso.</p></div>
+                <div class="feature-card"><div class="feature-icon">🏢</div><h3>Área da Montadora</h3><p>Empresas publicam manuais oficiais, alertas e informações relevantes para clientes.</p></div>
+                <div class="feature-card"><div class="feature-icon">🎯</div><h3>Busca Semântica</h3><p>Encontre diagnósticos com mais contexto, clareza e velocidade.</p></div>
+            </div>
+        </section>
+
+        <section id="como-funciona">
+            <h2 class="section-title">Como Funciona</h2>
+            <div class="steps">
+                <div class="step"><div class="step-number">1</div><h3>Cadastre-se</h3><p>Crie sua conta na plataforma com login seguro e acesso rápido.</p></div>
+                <div class="step"><div class="step-number">2</div><h3>Descreva o problema</h3><p>Insira o sintoma do veículo e obtenha uma análise contextualizada.</p></div>
+                <div class="step"><div class="step-number">3</div><h3>Diagnóstico e solução</h3><p>Receba sugestões e passos com base no manual e na experiência do sistema.</p></div>
+            </div>
+        </section>
+
+        <section id="planos">
+            <h2 class="section-title">Planos e Preços</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Gratuito</h3>
+                    <div class="price">R$ 0 <small>/mês</small></div>
+                    <p>Para quem quer testar o sistema.</p>
+                    <ul class="pricing-features"><li>3 diagnósticos por mês</li><li>Manual básico</li><li>Suporte comunitário</li></ul>
+                </div>
+                <div class="pricing-card popular">
+                    <span class="popular-badge">Mais Popular</span>
+                    <h3>Premium</h3>
+                    <div class="price">R$ 19,90 <small>/mês</small></div>
+                    <p>Ideal para uso frequente e diagnóstico avançado.</p>
+                    <ul class="pricing-features"><li>Diagnósticos ilimitados</li><li>IA com análise profunda</li><li>Manuais premium</li></ul>
+                </div>
+                <div class="pricing-card">
+                    <h3>Mecânico</h3>
+                    <div class="price">R$ 49,90 <small>/mês</small></div>
+                    <p>Para profissionais que querem gerenciar clientes e serviços.</p>
+                    <ul class="pricing-features"><li>Perfil profissional</li><li>Histórico completo</li><li>Atendimento prioritário</li></ul>
+                </div>
+            </div>
+        </section>
+
+        <div id="ia-diagnostico" class="ai-section">
+            <h2 style="margin-bottom: 1rem;">Diagnóstico com IA</h2>
+            <p>Insira o sintoma do veículo e o sistema identifica as causas mais prováveis.</p>
+            <div class="ai-demo">
+                <input type="text" value="O carro está falhando ao acelerar e o motor está tremendo." aria-label="Diagnóstico do veículo">
+                <div class="ai-results">
+                    <div class="result-item"><span>Probabilidade de falha na injeção</span><span class="probability">74%</span></div>
+                    <div class="result-item"><span>Problema na ignição</span><span class="probability">18%</span></div>
+                    <div class="result-item"><span>Sensor de pressão do ar</span><span class="probability">8%</span></div>
+                </div>
+            </div>
+        </div>
+
+        <section id="perfis">
+            <h2 class="section-title">Perfis de Usuário</h2>
+            <div class="profiles-grid">
+                <div class="profile-card">
+                    <div class="profile-icon">🚘</div>
+                    <h4>Cliente</h4>
+                    <p>Consulta diagnósticos e mantém registro do histórico do veículo.</p>
+                    <ul><li>Busca por sintomas</li><li>Guarda histórico</li><li>Recebe orientações</li></ul>
+                </div>
+                <div class="profile-card">
+                    <div class="profile-icon">🛠️</div>
+                    <h4>Mecânico</h4>
+                    <p>Valida causas e acompanha manutenção do automóvel com mais precisão.</p>
+                    <ul><li>Checklist por peça</li><li>Referência técnica</li><li>Colaboração em equipe</li></ul>
+                </div>
+                <div class="profile-card">
+                    <div class="profile-icon">🏭</div>
+                    <h4>Montadora</h4>
+                    <p>Publica normas, alerts e soluções oficiais para a frota e clientes.</p>
+                    <ul><li>Manuais oficiais</li><li>Campanhas e recalls</li><li>Relacionamento técnico</li></ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="tecnologia">
+            <h2 class="section-title">Tecnologia</h2>
+            <div class="tech-grid">
+                <div class="tech-item"><div>☁️</div><h4>Spring Boot</h4></div>
+                <div class="tech-item"><div>🔐</div><h4>JWT</h4></div>
+                <div class="tech-item"><div>🗄️</div><h4>MySQL</h4></div>
+                <div class="tech-item"><div>⚙️</div><h4>JPA</h4></div>
+                <div class="tech-item"><div>📡</div><h4>REST API</h4></div>
+                <div class="tech-item"><div>💡</div><h4>IA</h4></div>
+            </div>
+            <div class="mvp-timeline">
+                <div class="phase"><h4>Fase 1</h4><p>Autenticação segura com usuários e tokens JWT.</p></div>
+                <div class="phase"><h4>Fase 2</h4><p>Cadastro de tarefas e tarefas por usuário com CRUD completo.</p></div>
+                <div class="phase"><h4>Fase 3</h4><p>Dashboard interativo com integração real ao backend e dados em tempo real.</p></div>
+            </div>
+        </section>
+
+        <section id="dashboard" class="dashboard">
+            <h2 class="section-title">Painel do usuário</h2>
+            <div class="dashboard-grid">
+                <div class="dashboard-panel">
+                    <h3>Nova tarefa</h3>
+                    <div class="task-form">
+                        <textarea id="taskDescription" placeholder="Descreva a tarefa ou diagnóstico..."></textarea>
+                        <button class="primary-btn" id="createTaskBtn">Adicionar tarefa</button>
+                    </div>
+                    <div id="taskStatus" class="status-box hidden">Operação concluída.</div>
+                    <div id="taskError" class="error-box hidden"></div>
+                </div>
+                <div class="dashboard-panel">
+                    <h3>Minhas tarefas</h3>
+                    <p>Usuário autenticado: <strong id="dashboardUserName">-</strong></p>
+                    <ul class="list-tasks" id="taskList"></ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="contato">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>CarManual Diagnóstico</h4>
+                <p>Seu manual inteligente para diagnósticos automotivos precisos e colaborativos.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Contato</h4>
+                <p>📧 contato@carmanual.com.br</p>
+                <p>📱 (11) 99999-9999</p>
+            </div>
+            <div class="footer-section">
+                <h4>Navegação</h4>
+                <ul>
+                    <li><a onclick="scrollToSection('funcionalidades')">Funcionalidades</a></li>
+                    <li><a onclick="scrollToSection('dashboard')">Dashboard</a></li>
+                    <li><a onclick="scrollToSection('planos')">Planos</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">© 2026 CarManual Diagnóstico</div>
+    </footer>
+
+    <script src="/index1-app.js"></script>
+</body>
+</html>

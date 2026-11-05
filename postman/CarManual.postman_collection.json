@@ -1,0 +1,414 @@
+{
+  "info": {
+    "_postman_id": "7b9f5f9c-8d4a-4e25-9b7c-carmanual",
+    "name": "CarManual API - MySQL",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {"key": "baseUrl", "value": "http://localhost:8080"},
+    {"key": "token", "value": ""},
+    {"key": "testUsername", "value": ""},
+    {"key": "testPassword", "value": ""},
+    {"key": "testUserId", "value": ""},
+    {"key": "planoId", "value": "1"},
+    {"key": "clienteId", "value": "1"},
+    {"key": "mecanicoId", "value": "1"},
+    {"key": "manualId", "value": "1"},
+    {"key": "diagnosticoId", "value": "1"},
+    {"key": "avaliacaoId", "value": "1"}
+  ],
+  "item": [
+    {
+      "name": "00 - Autenticação JWT",
+      "item": [
+        {
+          "name": "Cadastrar usuário de teste",
+          "request": {
+            "auth": {"type": "noauth"},
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{testUsername}}\",\n  \"password\": \"{{testPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const suffix = pm.variables.replaceIn('{{$guid}}').replace(/-/g, '');",
+                  "pm.collectionVariables.set('testUsername', `postman_${suffix}`);",
+                  "pm.collectionVariables.set('testPassword', `Aa1!${suffix}`);",
+                  "pm.collectionVariables.unset('token');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Usuário de teste criado', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.id).to.exist;",
+                  "    pm.expect(body.username).to.eql(pm.collectionVariables.get('testUsername'));",
+                  "    pm.collectionVariables.set('testUserId', body.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Fazer login e salvar JWT",
+          "request": {
+            "auth": {"type": "noauth"},
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{testUsername}}\",\n  \"password\": \"{{testPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login retorna JWT', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.token).to.be.a('string').and.not.empty;",
+                  "    pm.expect(body.tokenType).to.eql('Bearer');",
+                  "    pm.collectionVariables.set('token', body.token);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Acessar rota protegida com JWT",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/task/user/{{testUserId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["task", "user", "{{testUserId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('JWT válido acessa rota protegida', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "403 - Rota protegida sem token",
+          "request": {
+            "auth": {"type": "noauth"},
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/task/user/{{testUserId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["task", "user", "{{testUserId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rota protegida sem token retorna 403', function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "403 - Rota protegida com token inválido",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {"key": "token", "value": "token-invalido", "type": "string"}
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/task/user/{{testUserId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["task", "user", "{{testUserId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Token inválido retorna 403', function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 - Login com senha inválida",
+          "request": {
+            "auth": {"type": "noauth"},
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{testUsername}}\",\n  \"password\": \"{{testPassword}}-errada\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Senha inválida retorna 401', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 - Plano",
+      "item": [
+        {"name":"Criar plano","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"nome\": \"Plano Premium\",\n  \"preco\": 49.90\n}"},"url":{"raw":"{{baseUrl}}/plano","host":["{{baseUrl}}"],"path":["plano"]}}},
+        {"name":"Listar planos","request":{"method":"GET","url":{"raw":"{{baseUrl}}/plano","host":["{{baseUrl}}"],"path":["plano"]}}}
+      ]
+    },
+    {
+      "name": "02 - Cliente",
+      "item": [
+        {"name":"Criar cliente","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"nome\": \"João da Silva\",\n  \"email\": \"joao@email.com\",\n  \"telefone\": \"48999999999\"\n}"},"url":{"raw":"{{baseUrl}}/cliente?idPlan={{planoId}}","host":["{{baseUrl}}"],"path":["cliente"],"query":[{"key":"idPlan","value":"{{planoId}}"}]}}},
+        {"name":"Listar clientes","request":{"method":"GET","url":{"raw":"{{baseUrl}}/cliente","host":["{{baseUrl}}"],"path":["cliente"]}}}
+      ]
+    },
+    {
+      "name": "03 - Mecânico",
+      "item": [
+        {"name":"Criar mecânico","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"nome\": \"Carlos Mecânico\",\n  \"email\": \"carlos@email.com\",\n  \"especialidade\": \"Motor\"\n}"},"url":{"raw":"{{baseUrl}}/mecanico?idPlan={{planoId}}","host":["{{baseUrl}}"],"path":["mecanico"],"query":[{"key":"idPlan","value":"{{planoId}}"}]}}},
+        {"name":"Listar mecânicos","request":{"method":"GET","url":{"raw":"{{baseUrl}}/mecanico","host":["{{baseUrl}}"],"path":["mecanico"]}}}
+      ]
+    },
+    {
+      "name": "04 - Manual",
+      "item": [
+        {"name":"Criar manual","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"titulo\": \"Manual do Motor\",\n  \"descricao\": \"Procedimentos de manutenção do motor\"\n}"},"url":{"raw":"{{baseUrl}}/manual","host":["{{baseUrl}}"],"path":["manual"]}}},
+        {"name":"Listar manuais","request":{"method":"GET","url":{"raw":"{{baseUrl}}/manual","host":["{{baseUrl}}"],"path":["manual"]}}}
+      ]
+    },
+    {
+      "name": "05 - Diagnóstico",
+      "item": [
+        {"name":"Criar diagnóstico","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"descricao\": \"Ruído no motor\",\n  \"resultado\": \"Necessária revisão\",\n  \"idVeic\": 1\n}"},"url":{"raw":"{{baseUrl}}/diagnostico?idCliente={{clienteId}}&idManual={{manualId}}","host":["{{baseUrl}}"],"path":["diagnostico"],"query":[{"key":"idCliente","value":"{{clienteId}}"},{"key":"idManual","value":"{{manualId}}"}]}}},
+        {"name":"Listar diagnósticos","request":{"method":"GET","url":{"raw":"{{baseUrl}}/diagnostico","host":["{{baseUrl}}"],"path":["diagnostico"]}}}
+      ]
+    },
+    {
+      "name": "06 - Avaliação",
+      "item": [
+        {"name":"Criar avaliação","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"nota\": 5,\n  \"comentario\": \"Excelente atendimento\"\n}"},"url":{"raw":"{{baseUrl}}/avaliacao?clienteId={{clienteId}}&mecanicoId={{mecanicoId}}","host":["{{baseUrl}}"],"path":["avaliacao"],"query":[{"key":"clienteId","value":"{{clienteId}}"},{"key":"mecanicoId","value":"{{mecanicoId}}"}]}}},
+        {"name":"Listar avaliações","request":{"method":"GET","url":{"raw":"{{baseUrl}}/avaliacao","host":["{{baseUrl}}"],"path":["avaliacao"]}}}
+      ]
+    },
+    {
+      "name": "07 - Testes de exceções (sem persistência)",
+      "item": [
+        {
+          "name": "200 - Buscar plano existente",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/plano/{{planoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["plano", "{{planoId}}"]
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Retorna 200 e um plano', function () {",
+                "    pm.response.to.have.status(200);",
+                "    pm.expect(pm.response.json()).to.have.property('id');",
+                "});"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "404 - Plano inexistente",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/plano/9999",
+              "host": ["{{baseUrl}}"],
+              "path": ["plano", "9999"]
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Retorna 404 padronizado', function () {",
+                "    pm.response.to.have.status(404);",
+                "    const body = pm.response.json();",
+                "    pm.expect(body.status).to.eql(404);",
+                "    pm.expect(body.message).to.include('Plano');",
+                "    pm.expect(body.message).to.include('9999');",
+                "    pm.expect(body.timestamp).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/);",
+                "});"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "400 - Diagnóstico inválido (validação)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descricao\": \"\",\n  \"resultado\": \"\",\n  \"idVeic\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/diagnostico",
+              "host": ["{{baseUrl}}"],
+              "path": ["diagnostico"]
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Retorna 400 com detalhes da validação', function () {",
+                "    pm.response.to.have.status(400);",
+                "    const body = pm.response.json();",
+                "    pm.expect(body.status).to.eql(400);",
+                "    pm.expect(body.message).to.include('descricao');",
+                "    pm.expect(body.message).to.include('resultado');",
+                "    pm.expect(body.message).to.include('idVeic');",
+                "    pm.expect(body.timestamp).to.be.a('string').and.not.empty;",
+                "});"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "500 - JSON malformado (handler genérico)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{"},
+            "url": {
+              "raw": "{{baseUrl}}/diagnostico",
+              "host": ["{{baseUrl}}"],
+              "path": ["diagnostico"]
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Retorna 500 padronizado', function () {",
+                "    pm.response.to.have.status(500);",
+                "    const body = pm.response.json();",
+                "    pm.expect(body.status).to.eql(500);",
+                "    pm.expect(body.message).to.eql('Erro interno do servidor.');",
+                "    pm.expect(body.timestamp).to.be.a('string').and.not.empty;",
+                "});"
+              ]
+            }
+          }]
+        }
+      ]
+    },
+    {
+      "name": "08 - Segurança",
+      "item": [
+        {
+          "name": "403 - Rota protegida sem autenticação",
+          "request": {
+            "auth": {"type": "noauth"},
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/plano",
+              "host": ["{{baseUrl}}"],
+              "path": ["plano"]
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Rota protegida sem autenticação retorna 403', function () {",
+                "    pm.response.to.have.status(403);",
+                "});"
+              ]
+            }
+          }]
+        }
+      ]
+    }
+  ]
+}

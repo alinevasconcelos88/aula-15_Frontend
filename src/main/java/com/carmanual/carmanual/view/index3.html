@@ -1,0 +1,3616 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CarManual - Sistema Completo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+  :root {
+    --bg-body: #f0f2f5;
+    --bg-card: #f8fafc;
+    --bg-container: #fff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --shadow: 0 2px 10px rgba(0,0,0,0.1);
+    --accent: #3b82f6;
+  }
+
+  [data-theme="dark"] {
+    --bg-body: #0f172a;
+    --bg-card: #1e293b;
+    --bg-container: #1a2332;
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --shadow: 0 2px 10px rgba(0,0,0,0.5);
+  }
+
+  body { background: var(--bg-body); padding: 10px; transition: all 0.3s; }
+  .container { max-width: 480px; margin: 0 auto; background: var(--bg-container); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; transition: all 0.3s; }
+  .header { background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: #fff; padding: 15px; text-align: center; position: relative; }
+  .header h1 { font-size: 20px; }
+  .header p { font-size: 12px; opacity: 0.9; }
+  .header .config-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; transition: transform 0.3s; }
+  .header .config-btn:hover { transform: translateY(-50%) rotate(90deg); }
+  .content { padding: 15px; min-height: 500px; }
+  .tab { display: none; }
+  .tab.active { display: block; }
+  .card { background: var(--bg-card); border-radius: 10px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border-color); transition: all 0.3s; }
+  .card h3 { color: #1e3a8a; margin-bottom: 10px; font-size: 16px; }
+  .btn { background: var(--accent); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; width: 100%; margin-top: 8px; transition: all 0.3s; }
+  .btn:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+  .btn-success { background: #10b981; }
+  .btn-success:hover { background: #059669; }
+  .btn-warning { background: #f59e0b; }
+  .btn-warning:hover { background: #d97706; }
+  .btn-danger { background: #ef4444; }
+  .btn-danger:hover { background: #dc2626; }
+  .btn-outline { background: transparent; color: var(--accent); border: 2px solid var(--accent); }
+  .btn-outline:hover { background: var(--accent); color: #fff; }
+  .btn-sm { padding: 6px 12px; font-size: 12px; width: auto; }
+  .btn-lg { padding: 14px 20px; font-size: 16px; width: 100%; }
+  input, textarea, select { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; margin-top: 5px; font-size: 14px; transition: border-color 0.3s; background: var(--bg-container); color: var(--text-primary); }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+  textarea { resize: vertical; min-height: 80px; }
+  label { font-weight: 600; color: var(--text-secondary); font-size: 13px; display: block; margin-top: 10px; }
+  .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 10px; }
+  .day-btn { padding: 8px; border: 2px solid var(--border-color); border-radius: 6px; background: var(--bg-container); cursor: pointer; font-size: 12px; text-align: center; transition: all 0.3s; color: var(--text-primary); }
+  .day-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .hours-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 10px; }
+  .hour-btn { padding: 8px; border: 2px solid var(--border-color); border-radius: 6px; background: var(--bg-container); cursor: pointer; font-size: 12px; text-align: center; transition: all 0.3s; color: var(--text-primary); }
+  .hour-btn.active { background: #10b981; color: #fff; border-color: #10b981; }
+  .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .stat-box { background: linear-gradient(135deg, var(--accent), #1e3a8a); color: #fff; padding: 15px; border-radius: 10px; text-align: center; }
+  .stat-box h2 { font-size: 24px; }
+  .stat-box p { font-size: 11px; opacity: 0.9; }
+  .upload-area { border: 2px dashed var(--accent); border-radius: 10px; padding: 25px; text-align: center; cursor: pointer; background: #eff6ff; transition: all 0.3s; }
+  .upload-area:hover { background: #dbeafe; }
+  .nav { display: flex; justify-content: space-around; background: #1e3a8a; padding: 10px 0; position: sticky; bottom: 0; }
+  .nav-item { color: #fff; text-align: center; cursor: pointer; font-size: 11px; padding: 5px; flex: 1; transition: all 0.3s; }
+  .nav-item.active { color: #fbbf24; }
+  .nav-item span { display: block; font-size: 20px; }
+  .manual-item { background: var(--bg-container); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 8px; }
+  .manual-item h4 { color: #1e3a8a; font-size: 14px; }
+  .manual-item p { font-size: 12px; color: var(--text-secondary); }
+  .ad-preview { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 10px; border-radius: 6px; margin-top: 10px; }
+  .payment-info { background: #dcfce7; border: 1px solid #86efac; padding: 15px; border-radius: 8px; text-align: center; }
+  .payment-info h3 { color: #166534; }
+  .payment-info.pagamento-pendente { background: #fee2e2; border-color: #fca5a5; }
+  .payment-info.pagamento-pendente h3 { color: #991b1b; }
+  .payment-info.pagamento-pendente .subtexto { color: #991b1b; }
+  .empty { text-align: center; color: var(--text-secondary); padding: 20px; font-style: italic; }
+
+  /* Login */
+  #loginScreen { max-width: 480px; margin: 0 auto; background: var(--bg-container); border-radius: 12px; padding: 30px 20px; box-shadow: var(--shadow); }
+  #loginScreen .logo { text-align: center; font-size: 60px; margin-bottom: 10px; }
+  #loginScreen h2 { text-align: center; color: #1e3a8a; margin-bottom: 20px; }
+  .login-error { color: #ef4444; font-size: 13px; text-align: center; margin-top: 10px; display: none; }
+
+  .user-info { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #eff6ff; border-radius: 8px; margin-bottom: 15px; }
+  .user-info .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; }
+  .user-info .details { flex: 1; }
+  .user-info .details .name { font-weight: 600; color: #1e3a8a; font-size: 14px; }
+  .user-info .details .email { font-size: 12px; color: var(--text-secondary); }
+
+  .toast {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+    background: #1e293b; color: #fff; padding: 12px 24px; border-radius: 8px;
+    font-size: 14px; z-index: 1000; opacity: 0; transition: all 0.3s;
+    pointer-events: none; max-width: 90%;
+  }
+  .toast.show { opacity: 1; }
+  .toast.success { background: #10b981; }
+  .toast.error { background: #ef4444; }
+
+  .diagnostico-result {
+    background: #eff6ff; border-left: 4px solid var(--accent);
+    padding: 12px; border-radius: 8px; margin-top: 10px;
+  }
+  .diagnostico-result .gravidade {
+    display: inline-block; padding: 2px 12px; border-radius: 12px;
+    font-size: 12px; font-weight: 600;
+  }
+  .gravidade.baixa { background: #10b981; color: #fff; }
+  .gravidade.media { background: #f59e0b; color: #fff; }
+  .gravidade.alta { background: #ef4444; color: #fff; }
+
+  .agendamento-item {
+    background: var(--bg-container); border: 1px solid var(--border-color);
+    border-radius: 8px; padding: 12px; margin-bottom: 8px;
+  }
+  .agendamento-item .cliente { font-weight: 600; color: #1e3a8a; }
+  .agendamento-item .status {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: 11px; font-weight: 600;
+  }
+  .status.pendente { background: #fef3c7; color: #92400e; }
+  .status.confirmado { background: #dcfce7; color: #166534; }
+  .status.cancelado { background: #fee2e2; color: #991b1b; }
+  .status.concluido { background: #dbeafe; color: #1e3a8a; }
+  .agendamento-item .acoes { display: flex; gap: 5px; margin-top: 8px; }
+  .agendamento-item .acoes .btn { padding: 6px 12px; font-size: 12px; width: auto; margin-top: 0; }
+  .agendamento-item .motivo-recusa {
+    background: #fee2e2;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-top: 6px;
+    font-size: 13px;
+    color: #991b1b;
+    border-left: 3px solid #ef4444;
+  }
+  .agendamento-item .motivo-recusa strong {
+    display: block;
+    font-size: 11px;
+    color: #7f1d1d;
+    margin-bottom: 2px;
+  }
+
+  .hidden { display: none !important; }
+
+  /* Configurações Modal */
+  .config-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center;
+    z-index: 999; padding: 20px;
+  }
+  .config-overlay.active { display: flex; }
+  .config-modal {
+    background: var(--bg-container); border-radius: 12px; padding: 25px;
+    max-width: 400px; width: 100%; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .config-modal h3 { color: #1e3a8a; margin-bottom: 15px; }
+  .config-modal .close-btn {
+    float: right; background: none; border: none; font-size: 24px;
+    cursor: pointer; color: var(--text-secondary);
+  }
+  .config-modal .close-btn:hover { color: var(--text-primary); }
+  .config-group { margin-top: 15px; }
+  .config-group label { display: block; margin-top: 10px; }
+  .color-options { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .color-options .color-btn {
+    width: 40px; height: 40px; border-radius: 50%; border: 3px solid transparent;
+    cursor: pointer; transition: all 0.3s;
+  }
+  .color-options .color-btn:hover { transform: scale(1.1); }
+  .color-options .color-btn.active { border-color: #1e3a8a; box-shadow: 0 0 10px rgba(30,58,138,0.3); }
+  .font-size-group { display: flex; gap: 8px; margin-top: 8px; }
+  .font-size-group .btn { flex: 1; }
+
+  /* Admin */
+  .admin-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+  .admin-stat { text-align: center; background: #eff6ff; padding: 10px; border-radius: 8px; }
+  .admin-stat .num { font-size: 22px; font-weight: 700; color: #1e3a8a; }
+  .admin-stat .label { font-size: 11px; color: var(--text-secondary); }
+
+  .relatorio-filtro {
+    display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0;
+  }
+  .relatorio-filtro input[type="date"] {
+    flex: 1; min-width: 100px; padding: 8px;
+  }
+  .relatorio-filtro .btn { flex: 0 1 auto; width: auto; padding: 8px 15px; }
+  .relatorio-item {
+    padding: 8px 0; border-bottom: 1px solid var(--border-color);
+    font-size: 13px;
+  }
+  .relatorio-item .data { color: var(--text-secondary); font-size: 11px; }
+
+  /* Alertas */
+  .alerta-item {
+    padding: 8px 12px; border-radius: 8px; margin-bottom: 6px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .alerta-item.critico { background: #fee2e2; border-left: 4px solid #ef4444; }
+  .alerta-item.atencao { background: #fef3c7; border-left: 4px solid #f59e0b; }
+  .alerta-item.ok { background: #dcfce7; border-left: 4px solid #10b981; }
+  .alerta-item .icon { font-size: 20px; }
+  .alerta-item .msg { flex: 1; font-size: 13px; }
+
+  .monitor-item {
+    display: flex; justify-content: space-between; padding: 6px 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .monitor-item .label { color: var(--text-secondary); font-size: 13px; }
+  .monitor-item .value { font-weight: 600; font-size: 14px; }
+
+  .rating-stars { display: flex; gap: 4px; font-size: 28px; cursor: pointer; margin: 8px 0; }
+  .rating-stars .star { transition: 0.2s; }
+  .rating-stars .star:hover { transform: scale(1.3); }
+  .rating-stars .star.active { color: #f59e0b; }
+
+  .veiculo-card {
+    background: var(--bg-container); border-radius: 8px; padding: 12px;
+    border: 1px solid var(--border-color);
+  }
+  .veiculo-card .modelo { font-size: 18px; font-weight: 700; color: #1e3a8a; }
+  .veiculo-card .info { font-size: 13px; color: var(--text-secondary); }
+
+  .mecanico-lista {
+    margin-top: 10px;
+  }
+  .mecanico-card {
+    background: var(--bg-container);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .mecanico-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59,130,246,0.2);
+  }
+  .mecanico-card.selecionado {
+    border-color: var(--accent);
+    background: #eff6ff;
+  }
+  .mecanico-card .nome {
+    font-weight: 700;
+    color: #1e3a8a;
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+  .mecanico-card .especialidades {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+  .mecanico-card .avaliacao {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    flex-wrap: wrap;
+  }
+  .mecanico-card .estrelas {
+    color: #f59e0b;
+    font-size: 16px;
+  }
+  .mecanico-card .media {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .mecanico-card .total-avaliacoes {
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .mecanico-select-wrapper {
+    margin-top: 10px;
+  }
+  .mecanico-select-wrapper select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
+    background: var(--bg-container);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: border-color 0.3s;
+  }
+  .mecanico-select-wrapper select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+  }
+  .mecanico-select-wrapper select option {
+    padding: 8px;
+  }
+
+  .file-upload-wrapper {
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 8px;
+  }
+  .file-upload-wrapper:hover {
+    border-color: var(--accent);
+    background: var(--bg-card);
+  }
+  .file-upload-wrapper .file-info {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+  }
+  .file-upload-wrapper .file-info strong {
+    color: var(--text-primary);
+  }
+  .file-upload-wrapper .remove-file {
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 8px;
+  }
+  .file-upload-wrapper .remove-file:hover {
+    text-decoration: underline;
+  }
+
+  .manual-download-btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    padding: 6px 15px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 12px;
+    margin-top: 6px;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+  }
+  .manual-download-btn:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+  }
+
+  .avaliacao-permitida {
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #166534;
+    margin-bottom: 10px;
+  }
+
+  .recusa-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center;
+    z-index: 1000; padding: 20px;
+  }
+  .recusa-overlay.active { display: flex; }
+  .recusa-modal {
+    background: var(--bg-container); border-radius: 12px; padding: 25px;
+    max-width: 400px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .recusa-modal h3 { color: #dc2626; margin-bottom: 15px; }
+  .recusa-modal .close-btn {
+    float: right; background: none; border: none; font-size: 24px;
+    cursor: pointer; color: var(--text-secondary);
+  }
+  .recusa-modal .close-btn:hover { color: var(--text-primary); }
+  .recusa-modal textarea {
+    min-height: 100px;
+  }
+  .recusa-modal .btn-group {
+    display: flex; gap: 10px; margin-top: 15px;
+  }
+  .recusa-modal .btn-group .btn {
+    flex: 1; margin-top: 0;
+  }
+
+  .recuperar-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center;
+    z-index: 1000; padding: 20px;
+  }
+  .recuperar-overlay.active { display: flex; }
+  .recuperar-modal {
+    background: var(--bg-container); border-radius: 12px; padding: 25px;
+    max-width: 400px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .recuperar-modal h3 { color: #1e3a8a; margin-bottom: 15px; }
+  .recuperar-modal .close-btn {
+    float: right; background: none; border: none; font-size: 24px;
+    cursor: pointer; color: var(--text-secondary);
+  }
+  .recuperar-modal .close-btn:hover { color: var(--text-primary); }
+  .recuperar-modal .btn-group {
+    display: flex; gap: 10px; margin-top: 15px;
+  }
+  .recuperar-modal .btn-group .btn {
+    flex: 1; margin-top: 0;
+  }
+
+  .status-mecanico {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .status-mecanico.ativo { background: #dcfce7; color: #166534; }
+  .status-mecanico.inativo { background: #fee2e2; color: #991b1b; }
+  .status-mecanico.pendente { background: #fef3c7; color: #92400e; }
+
+  .certificado-status {
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-size: 13px;
+  }
+  .certificado-status.enviado { background: #dcfce7; border: 1px solid #86efac; color: #166534; }
+  .certificado-status.pendente { background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; }
+  .certificado-status.rejeitado { background: #fee2e2; border: 1px solid #ef4444; color: #991b1b; }
+
+  /* Modal de Pagamento */
+  .pagamento-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center;
+    z-index: 1000; padding: 20px;
+  }
+  .pagamento-overlay.active { display: flex; }
+  .pagamento-modal {
+    background: var(--bg-container); border-radius: 12px; padding: 25px;
+    max-width: 400px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .pagamento-modal h3 { color: #1e3a8a; margin-bottom: 15px; text-align: center; }
+  .pagamento-modal .close-btn {
+    float: right; background: none; border: none; font-size: 24px;
+    cursor: pointer; color: var(--text-secondary);
+  }
+  .pagamento-modal .close-btn:hover { color: var(--text-primary); }
+  .pagamento-modal .total-pagar {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 700;
+    color: #1e3a8a;
+    margin: 15px 0;
+  }
+  .pagamento-modal .btn-group {
+    display: flex; gap: 10px; margin-top: 15px;
+  }
+  .pagamento-modal .btn-group .btn {
+    flex: 1; margin-top: 0;
+  }
+  .pagamento-modal .metodo-pagamento {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+  }
+  .pagamento-modal .metodo-pagamento .metodo-btn {
+    flex: 1;
+    min-width: 80px;
+    padding: 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: var(--bg-container);
+    font-size: 14px;
+  }
+  .pagamento-modal .metodo-pagamento .metodo-btn:hover {
+    border-color: var(--accent);
+  }
+  .pagamento-modal .metodo-pagamento .metodo-btn.active {
+    border-color: var(--accent);
+    background: #eff6ff;
+  }
+  .pagamento-modal .metodo-pagamento .metodo-btn .icon {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Status do mecânico no perfil */
+  .status-mecanico-detalhado {
+    background: var(--bg-container);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 10px;
+  }
+  .status-mecanico-detalhado .item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+  }
+  .status-mecanico-detalhado .item:last-child {
+    border-bottom: none;
+  }
+  .status-mecanico-detalhado .label {
+    color: var(--text-secondary);
+  }
+  .status-mecanico-detalhado .value {
+    font-weight: 600;
+  }
+  .status-mecanico-detalhado .value.ativo { color: #10b981; }
+  .status-mecanico-detalhado .value.inativo { color: #ef4444; }
+  .status-mecanico-detalhado .value.pendente { color: #f59e0b; }
+
+  .alerta-pagamento {
+    background: #fef3c7;
+    border: 2px solid #f59e0b;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+    text-align: center;
+  }
+  .alerta-pagamento .icon { font-size: 30px; display: block; }
+  .alerta-pagamento h4 { color: #92400e; margin: 8px 0; }
+  .alerta-pagamento p { color: #78350f; font-size: 13px; }
+
+  /* Plano ativo badge */
+  .plano-ativo-badge {
+    display: inline-block;
+    background: #10b981;
+    color: #fff;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .plano-inativo-badge {
+    display: inline-block;
+    background: #ef4444;
+    color: #fff;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .plano-info {
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 10px 0;
+    text-align: center;
+  }
+  .plano-info .dias-restantes {
+    font-size: 24px;
+    font-weight: 700;
+    color: #166534;
+  }
+  .plano-info .label {
+    font-size: 13px;
+    color: #166534;
+  }
+
+  .pagamento-card-destaque {
+    border: 3px solid var(--accent) !important;
+    background: var(--bg-card) !important;
+    border-radius: 12px !important;
+  }
+
+  .pagamento-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .pagamento-status-row:last-child {
+    border-bottom: none;
+  }
+  .pagamento-status-row .label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+  .pagamento-status-row .value {
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .pagamento-status-row .value.ativo { color: #10b981; }
+  .pagamento-status-row .value.inativo { color: #ef4444; }
+  .pagamento-status-row .value.pendente { color: #f59e0b; }
+
+  /* Pagamento Mensal - Card principal */
+  .pagamento-mensal-card {
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+    color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+  }
+  .pagamento-mensal-card h3 {
+    color: #fff !important;
+    margin-bottom: 15px;
+    font-size: 18px;
+  }
+  .pagamento-mensal-card .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+  }
+  .pagamento-mensal-card .info-row:last-child {
+    border-bottom: none;
+  }
+  .pagamento-mensal-card .info-row .label {
+    opacity: 0.9;
+    font-size: 13px;
+  }
+  .pagamento-mensal-card .info-row .value {
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .pagamento-mensal-card .btn {
+    background: #fff;
+    color: #1e3a8a;
+    font-weight: 700;
+    margin-top: 15px;
+    border: none;
+  }
+  .pagamento-mensal-card .btn:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ========== TELA DE LOGIN ========== -->
+<div id="loginScreen">
+  <div class="logo">🔧</div>
+  <h2>CarManual</h2>
+  <p style="text-align:center; color:var(--text-secondary); margin-bottom:20px;">Sistema Automotivo</p>
+
+  <label>E-mail:</label>
+  <input type="email" id="loginEmail" placeholder="Digite seu e-mail" value="mecanico@teste.com">
+
+  <label>Senha:</label>
+  <input type="password" id="loginSenha" placeholder="Digite sua senha" value="123456">
+
+  <div class="login-error" id="loginError">❌ Credenciais incorretas</div>
+
+  <button class="btn" onclick="fazerLogin()">🔑 Entrar</button>
+  <button class="btn btn-outline" onclick="mostrarCadastro()" style="margin-top:8px;">📝 Cadastrar-se</button>
+  <button class="btn btn-outline" onclick="abrirRecuperarSenha()" style="margin-top:8px;">🔑 Esqueci minha senha</button>
+
+  <div style="margin-top:12px; text-align:center; font-size:12px; color:var(--text-secondary);">
+    <p>👑 Admin: admin@carmanual.com / admin123</p>
+    <p>🔧 Mecânico: mecanico@teste.com / 123456</p>
+    <p>👤 Usuário: usuario@teste.com / 123456</p>
+  </div>
+</div>
+
+<!-- ========== TELA DE CADASTRO ========== -->
+<div id="cadastroScreen" class="hidden" style="max-width:480px; margin:0 auto; background:var(--bg-container); border-radius:12px; padding:30px 20px; box-shadow:var(--shadow);">
+  <h2 style="text-align:center; color:#1e3a8a;">📝 Criar Conta</h2>
+  <div style="margin-top:20px;">
+    <label>Nome completo:</label>
+    <input type="text" id="cadNome" placeholder="Seu nome completo">
+
+    <label>E-mail:</label>
+    <input type="email" id="cadEmail" placeholder="Seu e-mail">
+
+    <label>Senha:</label>
+    <input type="password" id="cadSenha" placeholder="Crie uma senha">
+
+    <label>Confirmar senha:</label>
+    <input type="password" id="cadSenhaConfirm" placeholder="Confirme sua senha">
+
+    <label>Tipo de conta:</label>
+    <select id="cadTipo" onchange="toggleCamposMecanico()">
+      <option value="usuario">👤 Usuário</option>
+      <option value="mecanico">🔧 Mecânico</option>
+      <option value="admin">👑 Administrador</option>
+    </select>
+
+    <div id="cadMecanicoInfo" style="margin-top:10px; padding:12px; background:var(--bg-card); border-radius:8px; border:1px solid var(--border-color);">
+      <label>CNPJ:</label>
+      <input type="text" id="cadCNPJ" placeholder="00.000.000/0000-00">
+      <label>Telefone:</label>
+      <input type="text" id="cadTelefone" placeholder="(00) 00000-0000">
+      <label>Endereço da oficina:</label>
+      <input type="text" id="cadEndereco" placeholder="Rua, número, bairro, cidade/UF">
+
+      <label style="margin-top:15px;">📄 Enviar Certificado (obrigatório para mecânicos):</label>
+      <div class="file-upload-wrapper" onclick="document.getElementById('certificadoInput').click()">
+        <div style="font-size:30px;">📜</div>
+        <p style="font-size:13px; color:var(--text-secondary);">Clique para selecionar o certificado (PDF ou imagem)</p>
+        <div class="file-info" id="certificadoFileInfo">Nenhum arquivo selecionado</div>
+        <input type="file" id="certificadoInput" accept=".pdf,.jpg,.jpeg,.png" hidden onchange="selecionarCertificado(event)">
+      </div>
+
+      <div style="margin-top:12px; padding:12px; background:#fef3c7; border-radius:8px; border:1px solid #f59e0b;">
+        <p style="font-size:13px; color:#92400e; margin:0;">
+          💰 <strong>Mensalidade: R$ 49,90/mês</strong>
+        </p>
+        <p style="font-size:11px; color:#92400e; margin:4px 0 0 0;">
+          ⚠️ Após o cadastro, faça o pagamento na aba <strong>"Perfil"</strong> para ativar sua conta.
+        </p>
+      </div>
+    </div>
+
+    <button class="btn btn-success" onclick="fazerCadastro()">✅ Cadastrar</button>
+    <button class="btn btn-outline" onclick="mostrarLogin()" style="margin-top:8px;">← Voltar</button>
+  </div>
+</div>
+
+<!-- ========== MODAL DE RECUPERAÇÃO DE SENHA ========== -->
+<div class="recuperar-overlay" id="recuperarOverlay">
+  <div class="recuperar-modal">
+    <button class="close-btn" onclick="fecharRecuperarSenha()">✕</button>
+    <h3>🔑 Recuperar Senha</h3>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:15px;">
+      Informe seu e-mail para receber as instruções de recuperação.
+    </p>
+    <label>E-mail cadastrado:</label>
+    <input type="email" id="recuperarEmail" placeholder="Digite seu e-mail">
+    <div class="btn-group">
+      <button class="btn btn-success" onclick="recuperarSenha()">📧 Enviar</button>
+      <button class="btn btn-outline" onclick="fecharRecuperarSenha()">Cancelar</button>
+    </div>
+    <div id="recuperarMensagem" style="margin-top:12px; text-align:center; font-size:13px;"></div>
+  </div>
+</div>
+
+<!-- ========== MODAL DE PAGAMENTO ========== -->
+<div class="pagamento-overlay" id="pagamentoOverlay">
+  <div class="pagamento-modal">
+    <button class="close-btn" onclick="fecharPagamento()">✕</button>
+    <h3>💳 Pagar Mensalidade</h3>
+    <div class="total-pagar">R$ 49,90</div>
+    <p style="text-align:center; color:var(--text-secondary); font-size:13px;">Selecione a forma de pagamento</p>
+
+    <div class="metodo-pagamento">
+      <div class="metodo-btn active" onclick="selecionarMetodoPagamento(this, 'pix')">
+        <span class="icon">💳</span>
+        PIX
+      </div>
+      <div class="metodo-btn" onclick="selecionarMetodoPagamento(this, 'cartao')">
+        <span class="icon">💳</span>
+        Cartão
+      </div>
+      <div class="metodo-btn" onclick="selecionarMetodoPagamento(this, 'boleto')">
+        <span class="icon">📄</span>
+        Boleto
+      </div>
+    </div>
+
+    <div id="dadosPagamento">
+      <div id="pixInfo" style="text-align:center; padding:15px; background:#eff6ff; border-radius:8px; margin:10px 0;">
+        <p style="font-size:14px; font-weight:600;">Chave PIX: <span style="color:#1e3a8a;">carmanual@pagamento.com</span></p>
+        <p style="font-size:12px; color:var(--text-secondary);">Copie a chave e realize o pagamento via seu banco</p>
+        <button class="btn btn-sm" onclick="copiarChavePix()" style="width:auto; margin-top:8px;">📋 Copiar Chave</button>
+      </div>
+      <div id="cartaoInfo" class="hidden" style="padding:10px 0;">
+        <label>Número do Cartão:</label>
+        <input type="text" id="cartaoNumero" placeholder="0000 0000 0000 0000">
+        <div style="display:flex; gap:10px;">
+          <div style="flex:1;">
+            <label>Validade:</label>
+            <input type="text" id="cartaoValidade" placeholder="MM/AA">
+          </div>
+          <div style="flex:1;">
+            <label>CVV:</label>
+            <input type="text" id="cartaoCvv" placeholder="123">
+          </div>
+        </div>
+        <label>Nome no Cartão:</label>
+        <input type="text" id="cartaoNome" placeholder="Como está no cartão">
+        <label>CPF/CNPJ:</label>
+        <input type="text" id="cartaoCpf" placeholder="000.000.000-00">
+      </div>
+      <div id="boletoInfo" class="hidden" style="text-align:center; padding:15px; background:#fef3c7; border-radius:8px; margin:10px 0;">
+        <p style="font-size:14px;">📄 Boleto Bancário</p>
+        <p style="font-size:12px; color:var(--text-secondary);">Um boleto será gerado para pagamento</p>
+        <p style="font-size:12px; color:var(--text-secondary);">Vencimento: 22/07/2026</p>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-success" onclick="confirmarPagamento()">✅ Confirmar Pagamento</button>
+      <button class="btn btn-outline" onclick="fecharPagamento()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL DE RECUSA ========== -->
+<div class="recusa-overlay" id="recusaOverlay">
+  <div class="recusa-modal">
+    <button class="close-btn" onclick="fecharRecusa()">✕</button>
+    <h3>❌ Motivo da Recusa</h3>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:10px;">
+      Informe o motivo pelo qual está recusando este agendamento:
+    </p>
+    <label>Motivo:</label>
+    <textarea id="motivoRecusa" placeholder="Descreva o motivo da recusa..."></textarea>
+    <div class="btn-group">
+      <button class="btn btn-danger" onclick="confirmarRecusa()">❌ Confirmar Recusa</button>
+      <button class="btn btn-outline" onclick="fecharRecusa()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== CONTEÚDO PRINCIPAL ========== -->
+<div id="mainContent" class="hidden">
+  <div class="container">
+    <div class="header">
+      <h1>🔧 CarManual</h1>
+      <p id="headerUser">Área do Usuário</p>
+      <button class="config-btn" onclick="abrirConfiguracoes()">⚙️</button>
+    </div>
+
+    <div class="content">
+
+      <!-- ABA INÍCIO -->
+      <div class="tab active" id="tab-inicio">
+        <div class="user-info">
+          <div class="avatar">👤</div>
+          <div class="details">
+            <div class="name" id="displayNome">Carregando...</div>
+            <div class="email" id="displayEmail">carregando@teste.com</div>
+          </div>
+          <button class="btn btn-danger" onclick="fazerLogout()" style="width:auto; padding:6px 15px; font-size:12px; margin-top:0;">🚪</button>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="adminDashboard" class="hidden">
+          <div class="card">
+            <h3>👑 Painel do Administrador</h3>
+            <div class="admin-stats">
+              <div class="admin-stat"><div class="num" id="adminTotalUsuarios">0</div><div class="label">Usuários</div></div>
+              <div class="admin-stat"><div class="num" id="adminTotalMecanicos">0</div><div class="label">Mecânicos</div></div>
+              <div class="admin-stat"><div class="num" id="adminTotalAnuncios">0</div><div class="label">Anúncios</div></div>
+              <div class="admin-stat"><div class="num" id="adminTotalManuais">0</div><div class="label">Manuais</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>📄 Certificados Pendentes</h3>
+            <div id="certificadosPendentes"><div class="empty">Nenhum certificado pendente</div></div>
+          </div>
+
+          <div class="card">
+            <h3>📊 Relatórios</h3>
+            <div class="relatorio-filtro">
+              <button class="btn btn-sm btn-success" onclick="gerarRelatorio('usuarios')">👤 Usuários</button>
+              <button class="btn btn-sm btn-success" onclick="gerarRelatorio('mecanicos')">🔧 Mecânicos</button>
+              <button class="btn btn-sm btn-success" onclick="gerarRelatorio('pagamentos')">💰 Pagamentos</button>
+              <button class="btn btn-sm btn-success" onclick="gerarRelatorio('anuncios')">📢 Anúncios</button>
+              <button class="btn btn-sm btn-success" onclick="gerarRelatorio('avaliacoes')">⭐ Avaliações</button>
+            </div>
+            <div class="relatorio-filtro">
+              <label style="font-size:11px; margin:0;">Período:</label>
+              <button class="btn btn-sm btn-outline" onclick="aplicarFiltroPeriodo(7)">7d</button>
+              <button class="btn btn-sm btn-outline" onclick="aplicarFiltroPeriodo(15)">15d</button>
+              <button class="btn btn-sm btn-outline" onclick="aplicarFiltroPeriodo(30)">30d</button>
+              <input type="date" id="dataInicio" style="flex:1; min-width:80px; padding:4px; font-size:11px;">
+              <input type="date" id="dataFim" style="flex:1; min-width:80px; padding:4px; font-size:11px;">
+              <button class="btn btn-sm" onclick="aplicarFiltroPersonalizado()">Filtrar</button>
+            </div>
+            <div id="relatorioContainer"><div class="empty">Selecione um relatório</div></div>
+          </div>
+
+          <div class="card">
+            <h3>📝 Manuais (Aprovação Direta)</h3>
+            <div id="manuaisAdmin"><div class="empty">Nenhum manual</div></div>
+          </div>
+
+          <div class="card">
+            <h3>📢 Anúncios para aprovação</h3>
+            <div id="anunciosPendentes"><div class="empty">Nenhum anúncio pendente</div></div>
+          </div>
+        </div>
+
+        <!-- Usuário Dashboard -->
+        <div id="usuarioDashboard">
+          <div class="card">
+            <h3>📢 Anúncios e Ofertas</h3>
+            <div id="anunciosContainer"><div class="empty">Nenhum anúncio disponível</div></div>
+          </div>
+
+          <div class="card">
+            <h3>🚘 Meu Veículo</h3>
+            <div id="veiculoInfo"><div class="empty">Nenhum veículo cadastrado</div></div>
+            <div style="margin-top:10px;">
+              <label>Modelo:</label>
+              <input type="text" id="veiculoModelo" placeholder="Ex: Honda Civic 2022">
+              <label>Placa:</label>
+              <input type="text" id="veiculoPlaca" placeholder="Ex: ABC-1234">
+              <label>Ano:</label>
+              <input type="number" id="veiculoAno" placeholder="2022">
+              <label>Quilometragem atual:</label>
+              <input type="number" id="veiculoKm" placeholder="0">
+              <button class="btn btn-success" onclick="salvarVeiculo()">💾 Salvar Veículo</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>🔔 Alertas</h3>
+            <div id="alertasContainer"><div class="empty">Sem alertas configurados</div></div>
+          </div>
+
+          <div class="card">
+            <h3>📊 Monitoramento</h3>
+            <div id="monitoramentoContainer">
+              <div class="monitor-item"><span class="label">🚗 Km/l</span><span class="value" id="monitorKm">--</span></div>
+              <div class="monitor-item"><span class="label">🌡️ Temp. Água</span><span class="value" id="monitorTemp">--</span></div>
+              <div class="monitor-item"><span class="label">⛽ Nível Combustível</span><span class="value" id="monitorCombustivel">--</span></div>
+              <div class="monitor-item"><span class="label">🔧 Próxima Revisão</span><span class="value" id="monitorRevisao">--</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mecânico Dashboard -->
+        <div id="mecanicoDashboard" class="hidden">
+          <div class="card">
+            <h3>📊 Resumo</h3>
+            <div class="stats-grid">
+              <div class="stat-box"><h2 id="totalAgendamentos">0</h2><p>Agendamentos</p></div>
+              <div class="stat-box"><h2 id="mediaAvaliacao">0.0</h2><p>Avaliação ⭐</p></div>
+              <div class="stat-box"><h2 id="totalAnuncios">0</h2><p>Anúncios Ativos</p></div>
+              <div class="stat-box"><h2 id="totalGanhos">R$ 0</h2><p>Ganhos</p></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>📅 Agenda Pendente</h3>
+            <div id="agendamentosPendentes"><div class="empty">Nenhum agendamento pendente</div></div>
+          </div>
+
+          <div class="card">
+            <h3>📅 Minha Agenda</h3>
+            <label>Dias disponíveis:</label>
+            <div class="days-grid" id="daysGrid">
+              <div class="day-btn" data-dia="Seg" onclick="toggleDia(this)">Seg</div>
+              <div class="day-btn" data-dia="Ter" onclick="toggleDia(this)">Ter</div>
+              <div class="day-btn" data-dia="Qua" onclick="toggleDia(this)">Qua</div>
+              <div class="day-btn" data-dia="Qui" onclick="toggleDia(this)">Qui</div>
+              <div class="day-btn" data-dia="Sex" onclick="toggleDia(this)">Sex</div>
+              <div class="day-btn" data-dia="Sáb" onclick="toggleDia(this)">Sáb</div>
+              <div class="day-btn" data-dia="Dom" onclick="toggleDia(this)">Dom</div>
+            </div>
+            <label style="margin-top:15px; display:block;">Horários disponíveis:</label>
+            <div class="hours-grid" id="hoursGrid">
+              <div class="hour-btn" data-hora="08:00" onclick="toggleHora(this)">08:00</div>
+              <div class="hour-btn" data-hora="09:00" onclick="toggleHora(this)">09:00</div>
+              <div class="hour-btn" data-hora="10:00" onclick="toggleHora(this)">10:00</div>
+              <div class="hour-btn" data-hora="11:00" onclick="toggleHora(this)">11:00</div>
+              <div class="hour-btn" data-hora="14:00" onclick="toggleHora(this)">14:00</div>
+              <div class="hour-btn" data-hora="15:00" onclick="toggleHora(this)">15:00</div>
+              <div class="hour-btn" data-hora="16:00" onclick="toggleHora(this)">16:00</div>
+              <div class="hour-btn" data-hora="17:00" onclick="toggleHora(this)">17:00</div>
+            </div>
+            <button class="btn btn-success" onclick="salvarAgenda()">💾 Salvar Agenda</button>
+          </div>
+
+          <div class="card">
+            <h3>📢 Criar Anúncio</h3>
+            <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">
+              💰 Valor do anúncio: <strong>R$ 29,90</strong>
+            </p>
+            <label>Título:</label>
+            <input type="text" id="anuncioTitulo" placeholder="Ex: Revisão completa com 20% OFF">
+            <label>Descrição:</label>
+            <textarea id="anuncioDesc" placeholder="Descreva seu serviço ou promoção..."></textarea>
+            <label>Valor (opcional):</label>
+            <input type="text" id="anuncioValor" placeholder="Ex: R$ 150,00">
+            <button class="btn btn-warning" onclick="criarAnuncio()">💳 Pagar R$ 29,90 e Publicar</button>
+          </div>
+
+          <div class="card">
+            <h3>📢 Meus Anúncios</h3>
+            <div id="meusAnuncios"><div class="empty">Nenhum anúncio ativo</div></div>
+          </div>
+
+          <div class="card">
+            <h3>⭐ Avaliações Recebidas</h3>
+            <div id="avaliacoesRecebidas"><div class="empty">Nenhuma avaliação ainda</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA IA -->
+      <div class="tab" id="tab-ia">
+        <div class="card">
+          <h3>📸 Diagnóstico por Foto</h3>
+          <div class="upload-area" onclick="document.getElementById('fotoInput').click()">
+            <div style="font-size:40px;">📷</div>
+            <p>Clique para selecionar imagem</p>
+            <input type="file" id="fotoInput" accept="image/*" hidden onchange="diagnosticarFoto(event)">
+          </div>
+          <div id="previewFoto" style="margin-top:10px; display:none;">
+            <img id="imgPreview" style="max-width:100%; border-radius:8px;" />
+          </div>
+          <div id="resultadoFoto"></div>
+        </div>
+
+        <div class="card">
+          <h3>✍️ Diagnóstico por Descrição</h3>
+          <label>Descreva o problema ou dúvida:</label>
+          <textarea id="descricaoProblema" placeholder="Ex: O carro está fazendo um barulho estranho ao frear..."></textarea>
+          <label>Modelo do veículo (opcional):</label>
+          <input type="text" id="modeloVeiculo" placeholder="Ex: Honda Civic 2022">
+          <button class="btn" onclick="diagnosticarTexto()">🔍 Diagnosticar</button>
+          <div id="resultadoTexto"></div>
+        </div>
+
+        <div class="card">
+          <h3>🤖 Resultado do Diagnóstico</h3>
+          <div id="ultimoDiagnostico"><div class="empty">Aguardando diagnóstico...</div></div>
+        </div>
+
+        <div class="card">
+          <h3>📋 Histórico de Diagnósticos</h3>
+          <div id="historicoDiagnosticos"><div class="empty">Nenhum diagnóstico realizado</div></div>
+        </div>
+      </div>
+
+      <!-- ABA HISTÓRICO -->
+      <div class="tab" id="tab-historico">
+        <div class="card">
+          <h3>📝 Registrar Manutenção</h3>
+          <label>Tipo:</label>
+          <select id="histTipo">
+            <option value="Troca de óleo">Troca de óleo</option>
+            <option value="Revisão">Revisão</option>
+            <option value="Troca de pneus">Troca de pneus</option>
+            <option value="Troca de filtros">Troca de filtros</option>
+            <option value="Alinhamento">Alinhamento</option>
+            <option value="Balanceamento">Balanceamento</option>
+            <option value="Reparo no motor">Reparo no motor</option>
+            <option value="Reparo na suspensão">Reparo na suspensão</option>
+            <option value="Outro">Outro</option>
+          </select>
+          <label>Quilometragem atual:</label>
+          <input type="number" id="histKm" placeholder="0">
+          <label>Data:</label>
+          <input type="date" id="histData">
+          <label>Observações:</label>
+          <textarea id="histObs" placeholder="Detalhes da manutenção..."></textarea>
+          <button class="btn btn-success" onclick="salvarHistorico()">💾 Salvar</button>
+        </div>
+
+        <div class="card">
+          <h3>📋 Histórico de Manutenções</h3>
+          <div id="listaHistorico"><div class="empty">Nenhuma manutenção registrada</div></div>
+        </div>
+
+        <div class="card">
+          <h3>🔔 Alertas de Manutenção</h3>
+          <div id="alertasManutencao"><div class="empty">Configure os alertas</div></div>
+          <div style="margin-top:10px;">
+            <label>⚠️ Alertar quando KM atingir:</label>
+            <input type="number" id="alertaKm" placeholder="Ex: 10000">
+            <label>⚠️ Alertar quando dias desde última manutenção:</label>
+            <input type="number" id="alertaDias" placeholder="Ex: 180">
+            <button class="btn btn-warning" onclick="configurarAlertas()">🔔 Configurar Alertas</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA MANUAIS -->
+      <div class="tab" id="tab-manuais">
+        <div class="card">
+          <h3>📖 Enviar Manual (PDF)</h3>
+          <label>Título do Manual:</label>
+          <input type="text" id="manualTitulo" placeholder="Ex: Manual do Honda Civic 2022">
+          <label>Categoria:</label>
+          <select id="manualCategoria">
+            <option value="Motor">Motor</option>
+            <option value="Freios">Freios</option>
+            <option value="Suspensão">Suspensão</option>
+            <option value="Elétrica">Elétrica</option>
+            <option value="Transmissão">Transmissão</option>
+          </select>
+          <label>Arquivo PDF:</label>
+          <div class="file-upload-wrapper" onclick="document.getElementById('manualPdfInput').click()">
+            <div style="font-size:30px;">📄</div>
+            <p style="font-size:13px; color:var(--text-secondary);">Clique para selecionar um arquivo PDF</p>
+            <div class="file-info" id="manualFileInfo">Nenhum arquivo selecionado</div>
+            <input type="file" id="manualPdfInput" accept=".pdf" hidden onchange="selecionarArquivoManual(event)">
+          </div>
+          <label>Descrição (opcional):</label>
+          <textarea id="manualDesc" placeholder="Breve descrição do manual..."></textarea>
+          <button class="btn btn-success" onclick="cadastrarManual()">📚 Enviar Manual</button>
+          <p style="font-size:11px; color:var(--text-secondary); margin-top:8px;" id="manualStatusMsg">
+            ⏳ Aguardando aprovação do administrador
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>📚 Meus Manuais</h3>
+          <div id="meusManuais"><div class="empty">Nenhum manual cadastrado</div></div>
+        </div>
+
+        <div class="card">
+          <h3>📖 Manuais Disponíveis</h3>
+          <div id="manuaisDisponiveis"><div class="empty">Nenhum manual disponível</div></div>
+        </div>
+      </div>
+
+      <!-- ABA MECÂNICO - Aparece apenas para usuários -->
+      <div class="tab" id="tab-mecanico">
+        <div class="card">
+          <h3>🔧 Agendar com Mecânico</h3>
+          <label>Selecione o mecânico:</label>
+          <div class="mecanico-select-wrapper">
+            <select id="mecanicoSelect" onchange="onMecanicoSelecionado()">
+              <option value="">-- Selecione um mecânico --</option>
+            </select>
+          </div>
+          <label>Data:</label>
+          <input type="date" id="mecanicoData" onchange="atualizarHorariosDisponiveis()">
+          <label>Horário:</label>
+          <select id="mecanicoHora"><option value="">Selecione uma data primeiro</option></select>
+          <label>Descrição do problema:</label>
+          <textarea id="mecanicoObs" placeholder="Descreva o que precisa ser feito..."></textarea>
+          <button class="btn btn-primary" onclick="agendarMecanico()">📅 Agendar</button>
+        </div>
+
+        <div class="card">
+          <h3>📋 Meus Agendamentos</h3>
+          <div id="meusAgendamentosUsuario"><div class="empty">Nenhum agendamento</div></div>
+        </div>
+
+        <div class="card">
+          <h3>⭐ Avaliar Mecânico</h3>
+          <div id="avaliacaoMensagem" class="avaliacao-permitida hidden">
+            ✅ Você pode avaliar os mecânicos com quem já agendou
+          </div>
+          <label>Selecione o mecânico:</label>
+          <div class="mecanico-select-wrapper">
+            <select id="avaliarMecanicoSelect">
+              <option value="">-- Selecione um mecânico --</option>
+            </select>
+          </div>
+          <label>Sua nota:</label>
+          <div class="rating-stars" id="ratingStars">
+            <span class="star" onclick="setRating(1)">⭐</span>
+            <span class="star" onclick="setRating(2)">⭐</span>
+            <span class="star" onclick="setRating(3)">⭐</span>
+            <span class="star" onclick="setRating(4)">⭐</span>
+            <span class="star" onclick="setRating(5)">⭐</span>
+          </div>
+          <label>Comentário:</label>
+          <textarea id="avaliacaoComentario" placeholder="Como foi o serviço?"></textarea>
+          <button class="btn btn-success" onclick="avaliarMecanico()">⭐ Enviar Avaliação</button>
+        </div>
+      </div>
+
+      <!-- ABA PERFIL -->
+      <div class="tab" id="tab-perfil">
+        <div class="card">
+          <h3>👤 Meus Dados</h3>
+          <label>Nome Completo:</label>
+          <input type="text" id="perfilNome" value="">
+          <label>E-mail:</label>
+          <input type="email" id="perfilEmail" value="">
+          <label>Telefone:</label>
+          <input type="tel" id="perfilTelefone" placeholder="(00) 00000-0000">
+          <label>Senha (deixe em branco para manter):</label>
+          <input type="password" id="perfilSenha" placeholder="Nova senha">
+          <button class="btn btn-success" onclick="salvarPerfil()">💾 Salvar Dados</button>
+        </div>
+
+        <!-- Status do Mecânico e Certificado -->
+        <div id="mecanicoStatusPerfil" class="card hidden">
+          <h3>🔧 Status da Conta de Mecânico</h3>
+
+          <div class="status-mecanico-detalhado">
+            <div class="item">
+              <span class="label">📋 Status da Conta:</span>
+              <span class="value" id="statusMecanicoBadgePerfil">⏳ Pendente</span>
+            </div>
+            <div class="item">
+              <span class="label">📄 Certificado:</span>
+              <span class="value" id="statusCertificadoPerfil">⏳ Não enviado</span>
+            </div>
+            <div class="item">
+              <span class="label">💳 Mensalidade:</span>
+              <span class="value" id="statusPagamentoPerfil">⛔ Pendente</span>
+            </div>
+            <div class="item">
+              <span class="label">🔧 Visível para usuários:</span>
+              <span class="value" id="statusVisivelPerfil">❌ Não</span>
+            </div>
+            <div class="item">
+              <span class="label">📅 Dias restantes do plano:</span>
+              <span class="value" id="diasRestantesPerfil">0 dias</span>
+            </div>
+          </div>
+
+          <div id="certificadoStatusDiv" class="certificado-status pendente">
+            📄 Certificado: <strong>Não enviado</strong>
+          </div>
+
+          <div style="margin-top:12px;">
+            <label>📄 Enviar/Atualizar Certificado:</label>
+            <div class="file-upload-wrapper" onclick="document.getElementById('certificadoPerfilInput').click()">
+              <div style="font-size:30px;">📜</div>
+              <p style="font-size:13px; color:var(--text-secondary);">Clique para selecionar o certificado (PDF ou imagem)</p>
+              <div class="file-info" id="certificadoPerfilFileInfo">Nenhum arquivo selecionado</div>
+              <input type="file" id="certificadoPerfilInput" accept=".pdf,.jpg,.jpeg,.png" hidden onchange="selecionarCertificadoPerfil(event)">
+            </div>
+            <button class="btn btn-warning" onclick="enviarCertificadoPerfil()">📤 Enviar Certificado</button>
+          </div>
+        </div>
+
+        <!-- PAGAMENTO MENSAL - SEMPRE VISÍVEL PARA MECÂNICOS -->
+        <div id="pagamentoMensal" class="card pagamento-card-destaque" style="display:block;">
+          <h3 style="color:#1e3a8a; margin-bottom:15px;">💳 Mensalidade</h3>
+
+          <!-- Card de Pagamento em Destaque -->
+          <div class="pagamento-mensal-card">
+            <div class="info-row">
+              <span class="label">💳 Valor</span>
+              <span class="value">R$ 49,90/mês</span>
+            </div>
+            <div class="info-row">
+              <span class="label">📅 Ciclo</span>
+              <span class="value">30 dias</span>
+            </div>
+            <div class="info-row">
+              <span class="label">📌 Status</span>
+              <span class="value" id="statusPagamentoResumoCard">⛔ Inativo</span>
+            </div>
+            <div class="info-row">
+              <span class="label">⏳ Dias restantes</span>
+              <span class="value" id="diasRestantesResumoCard">0 dias</span>
+            </div>
+            <div class="info-row" style="border-bottom: none;">
+              <span class="label">📅 Próximo vencimento</span>
+              <span class="value" id="proximoVencimentoResumoCard">--</span>
+            </div>
+            <button class="btn" onclick="abrirPagamento()">💳 Pagar Agora</button>
+          </div>
+
+          <!-- Informações adicionais -->
+          <div class="payment-info" id="paymentInfoBox" style="margin-top:15px;">
+            <h3 id="paymentStatusTitle">Valor: R$ 49,90/mês</h3>
+            <p id="statusPagamento" style="color:#166534; font-size:13px;">✅ Status: Em dia</p>
+            <p style="font-size:11px; color:var(--text-secondary); margin-top:5px;">
+              Vencimento: 22/07/2026
+            </p>
+          </div>
+
+          <button class="btn btn-warning btn-lg" onclick="abrirPagamento()" style="margin-top:10px;">💳 Pagar Mensalidade Agora</button>
+
+          <div style="margin-top:12px; padding:12px; background:#eff6ff; border-radius:8px; border:1px solid var(--accent);">
+            <p style="font-size:13px; color:var(--text-secondary); margin:0;">
+              <strong>ℹ️ Importante:</strong> Mantenha sua mensalidade em dia para continuar visível para os usuários e poder usar todos os recursos do sistema.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- NAVEGAÇÃO -->
+    <div class="nav">
+      <div class="nav-item active" onclick="showTab('inicio', this)">
+        <span>🏠</span>Início
+      </div>
+      <div class="nav-item" id="navIA" onclick="showTab('ia', this)">
+        <span>🤖</span>IA
+      </div>
+      <div class="nav-item" id="navHistorico" onclick="showTab('historico', this)">
+        <span>📜</span>Hist.
+      </div>
+      <div class="nav-item" onclick="showTab('manuais', this)">
+        <span>📖</span>Manuais
+      </div>
+      <div class="nav-item" id="navMecanico" onclick="showTab('mecanico', this)">
+        <span>🔧</span>Mec.
+      </div>
+      <div class="nav-item" onclick="showTab('perfil', this)">
+        <span>👤</span>Perfil
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== CONFIGURAÇÕES (MODAL) ========== -->
+<div class="config-overlay" id="configOverlay">
+  <div class="config-modal">
+    <button class="close-btn" onclick="fecharConfiguracoes()">✕</button>
+    <h3>⚙️ Configurações</h3>
+
+    <div class="config-group">
+      <label>🔤 Tamanho da Fonte:</label>
+      <div class="font-size-group">
+        <button class="btn btn-sm" onclick="mudarFonte('pequeno')">P</button>
+        <button class="btn btn-sm" onclick="mudarFonte('medio')">M</button>
+        <button class="btn btn-sm" onclick="mudarFonte('grande')">G</button>
+      </div>
+    </div>
+
+    <div class="config-group">
+      <label>🎨 Cores do Tema:</label>
+      <div class="color-options">
+        <div class="color-btn active" style="background:#3b82f6;" onclick="mudarCor('azul', this)"></div>
+        <div class="color-btn" style="background:#10b981;" onclick="mudarCor('verde', this)"></div>
+        <div class="color-btn" style="background:#ef4444;" onclick="mudarCor('vermelho', this)"></div>
+        <div class="color-btn" style="background:#8b5cf6;" onclick="mudarCor('roxo', this)"></div>
+        <div class="color-btn" style="background:#f59e0b;" onclick="mudarCor('amarelo', this)"></div>
+        <div class="color-btn" style="background:#ec4899;" onclick="mudarCor('rosa', this)"></div>
+      </div>
+    </div>
+
+    <div class="config-group">
+      <label>🌓 Modo:</label>
+      <button class="btn" onclick="toggleTheme()">🌙 Alternar Tema</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== BANCO DE DADOS =====================
+let usuarios = [];
+let manuais = [];
+let agendamentos = [];
+let anuncios = [];
+let diagnosticos = [];
+let avaliacoes = [];
+let historicoManutencao = [];
+let veiculos = [];
+let certificados = [];
+let usuarioLogado = null;
+let diasSelecionados = [];
+let horariosSelecionados = [];
+let temaAtual = 'claro';
+let corAtual = 'azul';
+let fonteAtual = 'medio';
+let filtroDataInicio = null;
+let filtroDataFim = null;
+let ratingSelecionado = 0;
+let alertasManutencao = {};
+let manualArquivoSelecionado = null;
+let manualArquivoNome = '';
+let recusaAgendamentoId = null;
+let certificadoArquivoSelecionado = null;
+let certificadoArquivoNome = '';
+let certificadoPerfilArquivoSelecionado = null;
+let certificadoPerfilArquivoNome = '';
+let metodoPagamentoSelecionado = 'pix';
+
+// ===================== SISTEMA DE PLANO MENSAL =====================
+const DIAS_PLANO = 30;
+const VALOR_MENSALIDADE = 49.90;
+
+function calcularDiasRestantes(usuario) {
+  if (!usuario || !usuario.pagamentoEmDia || !usuario.dataUltimoPagamento) {
+    return 0;
+  }
+  const dataPagamento = new Date(usuario.dataUltimoPagamento);
+  const dataExpiracao = new Date(dataPagamento);
+  dataExpiracao.setDate(dataExpiracao.getDate() + DIAS_PLANO);
+  const agora = new Date();
+  const diff = Math.ceil((dataExpiracao - agora) / (1000 * 60 * 60 * 24));
+  return Math.max(0, diff);
+}
+
+function verificarPlanoAtivo(usuario) {
+  if (!usuario) return false;
+  if (!usuario.pagamentoEmDia || !usuario.dataUltimoPagamento) {
+    return false;
+  }
+  const diasRestantes = calcularDiasRestantes(usuario);
+  const ativo = diasRestantes > 0;
+
+  if (!ativo && usuario.pagamentoEmDia) {
+    usuario.pagamentoEmDia = false;
+    const idx = usuarios.findIndex(u => u.id === usuario.id);
+    if (idx !== -1) {
+      usuarios[idx] = usuario;
+    }
+    salvarTodosDados();
+  }
+
+  return ativo;
+}
+
+function atualizarStatusPlano(usuario) {
+  if (!usuario) return;
+  return verificarPlanoAtivo(usuario);
+}
+
+function verificarTodosPlanos() {
+  usuarios.forEach(u => {
+    if (u.tipo === 'mecanico') {
+      verificarPlanoAtivo(u);
+    }
+  });
+}
+
+// ===================== DADOS INICIAIS =====================
+function inicializarDados() {
+  const agora = new Date().toISOString();
+  const usuariosPadrao = [
+    { id: 1, nome: 'Administrador', email: 'admin@carmanual.com', senha: 'admin123', tipo: 'admin', cnpj: '', telefone: '', endereco: '', especialidades: '', pagamentoEmDia: true, certificadoStatus: 'aprovado', certificadoUrl: '', dataCadastro: agora, dataUltimoPagamento: agora },
+    { id: 2, nome: 'Usuário Teste', email: 'usuario@teste.com', senha: '123456', tipo: 'usuario', cnpj: '', telefone: '(11) 99999-9999', endereco: '', especialidades: '', pagamentoEmDia: true, certificadoStatus: 'aprovado', certificadoUrl: '', dataCadastro: agora, dataUltimoPagamento: agora },
+    { id: 3, nome: 'Mecânico Teste', email: 'mecanico@teste.com', senha: '123456', tipo: 'mecanico', cnpj: '12.345.678/0001-90', telefone: '(11) 99999-9999', endereco: 'Rua das Oficinas, 123 - São Paulo/SP', especialidades: 'Motor, Suspensão, Freios', pagamentoEmDia: true, certificadoStatus: 'aprovado', certificadoUrl: '', dataCadastro: agora, dataUltimoPagamento: agora },
+    { id: 4, nome: 'Auto Center Silva', email: 'silva@oficina.com', senha: '123456', tipo: 'mecanico', cnpj: '98.765.432/0001-10', telefone: '(11) 88888-8888', endereco: 'Av. Brasil, 456 - São Paulo/SP', especialidades: 'Elétrica, Ar Condicionado', pagamentoEmDia: true, certificadoStatus: 'aprovado', certificadoUrl: '', dataCadastro: agora, dataUltimoPagamento: agora },
+    { id: 5, nome: 'Mecânica Rápida', email: 'rapida@oficina.com', senha: '123456', tipo: 'mecanico', cnpj: '11.222.333/0001-44', telefone: '(11) 77777-7777', endereco: 'Rua das Flores, 789 - São Paulo/SP', especialidades: 'Freios, Suspensão, Transmissão', pagamentoEmDia: true, certificadoStatus: 'aprovado', certificadoUrl: '', dataCadastro: agora, dataUltimoPagamento: agora }
+  ];
+
+  const dadosExistentes = localStorage.getItem('carmanual_usuarios');
+
+  if (!dadosExistentes) {
+    usuarios = JSON.parse(JSON.stringify(usuariosPadrao));
+    localStorage.setItem('carmanual_usuarios', JSON.stringify(usuarios));
+  } else {
+    usuarios = JSON.parse(dadosExistentes);
+
+    const emailsPadrao = usuariosPadrao.map(u => u.email);
+    let precisaAtualizar = false;
+
+    emailsPadrao.forEach(email => {
+      const existe = usuarios.some(u => u.email === email);
+      if (!existe) {
+        precisaAtualizar = true;
+        const usuarioPadrao = usuariosPadrao.find(u => u.email === email);
+        if (usuarioPadrao) {
+          usuarios.push(usuarioPadrao);
+        }
+      }
+    });
+
+    if (precisaAtualizar) {
+      localStorage.setItem('carmanual_usuarios', JSON.stringify(usuarios));
+    }
+  }
+
+  if (!localStorage.getItem('carmanual_agendamentos')) {
+    agendamentos = [];
+    localStorage.setItem('carmanual_agendamentos', JSON.stringify(agendamentos));
+  } else {
+    agendamentos = JSON.parse(localStorage.getItem('carmanual_agendamentos'));
+  }
+
+  if (!localStorage.getItem('carmanual_anuncios')) {
+    anuncios = [
+      { id: 1, usuarioId: 3, titulo: 'Revisão Completa 20% OFF', descricao: 'Revisão completa com diagnóstico gratuito', valor: 'R$ 299,00', status: 'ativo', data: new Date().toISOString() },
+      { id: 2, usuarioId: 3, titulo: 'Troca de Óleo - R$ 89,90', descricao: 'Troca de óleo com filtro incluso', valor: 'R$ 89,90', status: 'ativo', data: new Date().toISOString() }
+    ];
+    localStorage.setItem('carmanual_anuncios', JSON.stringify(anuncios));
+  } else {
+    anuncios = JSON.parse(localStorage.getItem('carmanual_anuncios'));
+  }
+
+  if (!localStorage.getItem('carmanual_manuais')) {
+    manuais = [];
+    localStorage.setItem('carmanual_manuais', JSON.stringify(manuais));
+  } else {
+    manuais = JSON.parse(localStorage.getItem('carmanual_manuais'));
+  }
+
+  if (!localStorage.getItem('carmanual_diagnosticos')) {
+    diagnosticos = [];
+    localStorage.setItem('carmanual_diagnosticos', JSON.stringify(diagnosticos));
+  } else {
+    diagnosticos = JSON.parse(localStorage.getItem('carmanual_diagnosticos'));
+  }
+
+  if (!localStorage.getItem('carmanual_avaliacoes')) {
+    avaliacoes = [];
+    localStorage.setItem('carmanual_avaliacoes', JSON.stringify(avaliacoes));
+  } else {
+    avaliacoes = JSON.parse(localStorage.getItem('carmanual_avaliacoes'));
+  }
+
+  if (!localStorage.getItem('carmanual_historico')) {
+    historicoManutencao = [];
+    localStorage.setItem('carmanual_historico', JSON.stringify(historicoManutencao));
+  } else {
+    historicoManutencao = JSON.parse(localStorage.getItem('carmanual_historico'));
+  }
+
+  if (!localStorage.getItem('carmanual_veiculos')) {
+    veiculos = [];
+    localStorage.setItem('carmanual_veiculos', JSON.stringify(veiculos));
+  } else {
+    veiculos = JSON.parse(localStorage.getItem('carmanual_veiculos'));
+  }
+
+  if (!localStorage.getItem('carmanual_alertas')) {
+    alertasManutencao = {};
+    localStorage.setItem('carmanual_alertas', JSON.stringify(alertasManutencao));
+  } else {
+    alertasManutencao = JSON.parse(localStorage.getItem('carmanual_alertas'));
+  }
+
+  if (!localStorage.getItem('carmanual_certificados')) {
+    certificados = [];
+    localStorage.setItem('carmanual_certificados', JSON.stringify(certificados));
+  } else {
+    certificados = JSON.parse(localStorage.getItem('carmanual_certificados'));
+  }
+
+  verificarTodosPlanos();
+}
+
+function salvarTodosDados() {
+  localStorage.setItem('carmanual_usuarios', JSON.stringify(usuarios));
+  localStorage.setItem('carmanual_agendamentos', JSON.stringify(agendamentos));
+  localStorage.setItem('carmanual_anuncios', JSON.stringify(anuncios));
+  localStorage.setItem('carmanual_manuais', JSON.stringify(manuais));
+  localStorage.setItem('carmanual_diagnosticos', JSON.stringify(diagnosticos));
+  localStorage.setItem('carmanual_avaliacoes', JSON.stringify(avaliacoes));
+  localStorage.setItem('carmanual_historico', JSON.stringify(historicoManutencao));
+  localStorage.setItem('carmanual_veiculos', JSON.stringify(veiculos));
+  localStorage.setItem('carmanual_alertas', JSON.stringify(alertasManutencao));
+  localStorage.setItem('carmanual_certificados', JSON.stringify(certificados));
+}
+
+// ===================== LOGIN =====================
+function fazerLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const senha = document.getElementById('loginSenha').value;
+
+  const dados = localStorage.getItem('carmanual_usuarios');
+  if (dados) {
+    usuarios = JSON.parse(dados);
+  }
+
+  const usuario = usuarios.find(u => u.email === email && u.senha === senha);
+
+  if (!usuario) {
+    document.getElementById('loginError').style.display = 'block';
+    showToast('❌ Credenciais incorretas!', 'error');
+    return;
+  }
+
+  document.getElementById('loginError').style.display = 'none';
+  usuarioLogado = usuario;
+
+  if (usuario.tipo === 'mecanico') {
+    verificarPlanoAtivo(usuario);
+    const updated = usuarios.find(u => u.id === usuario.id);
+    if (updated) {
+      usuarioLogado = updated;
+    }
+  }
+
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('cadastroScreen').classList.add('hidden');
+  document.getElementById('mainContent').classList.remove('hidden');
+
+  const tipoMap = { 'admin': 'Administrador', 'mecanico': 'Mecânico', 'usuario': 'Usuário' };
+  document.getElementById('headerUser').textContent = `👤 ${usuario.nome} (${tipoMap[usuario.tipo]})`;
+  document.getElementById('displayNome').textContent = usuario.nome;
+  document.getElementById('displayEmail').textContent = usuario.email;
+
+  document.getElementById('perfilNome').value = usuario.nome;
+  document.getElementById('perfilEmail').value = usuario.email;
+  document.getElementById('perfilTelefone').value = usuario.telefone || '';
+
+  const isAdmin = usuario.tipo === 'admin';
+  const isMecanico = usuario.tipo === 'mecanico';
+  const isUsuario = usuario.tipo === 'usuario';
+
+  document.getElementById('adminDashboard').classList.toggle('hidden', !isAdmin);
+  document.getElementById('usuarioDashboard').classList.toggle('hidden', !isUsuario);
+  document.getElementById('mecanicoDashboard').classList.toggle('hidden', !isMecanico);
+
+  document.getElementById('navIA').style.display = isAdmin ? 'none' : 'block';
+  document.getElementById('navHistorico').style.display = isUsuario ? 'block' : 'none';
+  document.getElementById('navMecanico').style.display = isUsuario ? 'block' : 'none';
+
+  document.getElementById('mecanicoStatusPerfil').style.display = isMecanico ? 'block' : 'none';
+  document.getElementById('pagamentoMensal').style.display = isMecanico ? 'block' : 'none';
+
+  const statusMsg = document.getElementById('manualStatusMsg');
+  if (isAdmin) {
+    statusMsg.textContent = '✅ Como administrador, seus manuais são aprovados automaticamente';
+    statusMsg.style.color = '#10b981';
+  } else {
+    statusMsg.textContent = '⏳ Aguardando aprovação do administrador';
+    statusMsg.style.color = '#f59e0b';
+  }
+
+  if (isMecanico) {
+    atualizarStatusMecanicoPerfil();
+    atualizarPlanoInfo();
+    atualizarResumoPagamento();
+  }
+
+  if (isAdmin) {
+    carregarAdminDashboard();
+  } else if (isMecanico) {
+    carregarDadosMecanico();
+  } else if (isUsuario) {
+    carregarDadosUsuario();
+  }
+
+  if (isUsuario) {
+    carregarListaMecanicosAgendamento();
+    carregarListaMecanicosAvaliacao();
+  }
+
+  showToast(`✅ Bem-vindo, ${usuario.nome}!`, 'success');
+}
+
+function fazerLogout() {
+  usuarioLogado = null;
+  document.getElementById('mainContent').classList.add('hidden');
+  document.getElementById('loginScreen').classList.remove('hidden');
+  showToast('👋 Até logo!', 'success');
+}
+
+function mostrarCadastro() {
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('cadastroScreen').classList.remove('hidden');
+}
+
+function mostrarLogin() {
+  document.getElementById('cadastroScreen').classList.add('hidden');
+  document.getElementById('loginScreen').classList.remove('hidden');
+}
+
+function toggleCamposMecanico() {
+  const tipo = document.getElementById('cadTipo').value;
+  document.getElementById('cadMecanicoInfo').style.display = tipo === 'mecanico' ? 'block' : 'none';
+}
+
+function selecionarCertificado(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('❌ O arquivo deve ter no máximo 5MB!', 'error');
+    event.target.value = '';
+    return;
+  }
+
+  certificadoArquivoSelecionado = file;
+  certificadoArquivoNome = file.name;
+  document.getElementById('certificadoFileInfo').innerHTML = `
+    ✅ <strong>${file.name}</strong> (${(file.size / 1024).toFixed(1)} KB)
+    <span class="remove-file" onclick="removerCertificado()">✕ remover</span>
+  `;
+}
+
+function removerCertificado() {
+  certificadoArquivoSelecionado = null;
+  certificadoArquivoNome = '';
+  document.getElementById('certificadoFileInfo').textContent = 'Nenhum arquivo selecionado';
+  document.getElementById('certificadoInput').value = '';
+}
+
+function fazerCadastro() {
+  const nome = document.getElementById('cadNome').value.trim();
+  const email = document.getElementById('cadEmail').value.trim();
+  const senha = document.getElementById('cadSenha').value;
+  const senhaConfirm = document.getElementById('cadSenhaConfirm').value;
+  const tipo = document.getElementById('cadTipo').value;
+
+  if (!nome || !email || !senha || !senhaConfirm) {
+    showToast('❌ Preencha todos os campos!', 'error');
+    return;
+  }
+
+  if (senha !== senhaConfirm) {
+    showToast('❌ Senhas não coincidem!', 'error');
+    return;
+  }
+
+  if (usuarios.find(u => u.email === email)) {
+    showToast('❌ E-mail já cadastrado!', 'error');
+    return;
+  }
+
+  const cnpj = document.getElementById('cadCNPJ').value.trim();
+  const telefone = document.getElementById('cadTelefone').value.trim();
+  const endereco = document.getElementById('cadEndereco').value.trim();
+
+  if (tipo === 'mecanico' && !certificadoArquivoSelecionado) {
+    showToast('❌ Para se cadastrar como mecânico, você precisa enviar um certificado!', 'error');
+    return;
+  }
+
+  const novoUsuario = {
+    id: Date.now(),
+    nome,
+    email,
+    senha,
+    tipo,
+    cnpj: tipo === 'mecanico' ? cnpj : '',
+    telefone: tipo === 'mecanico' ? telefone : '',
+    endereco: tipo === 'mecanico' ? endereco : '',
+    especialidades: '',
+    pagamentoEmDia: tipo === 'mecanico' ? false : true,
+    certificadoStatus: tipo === 'mecanico' ? 'pendente' : 'aprovado',
+    certificadoUrl: '',
+    dataCadastro: new Date().toISOString(),
+    dataUltimoPagamento: tipo === 'mecanico' ? null : new Date().toISOString()
+  };
+
+  usuarios.push(novoUsuario);
+
+  if (tipo === 'mecanico' && certificadoArquivoSelecionado) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      certificados.push({
+        id: Date.now(),
+        usuarioId: novoUsuario.id,
+        usuarioNome: novoUsuario.nome,
+        arquivoNome: certificadoArquivoNome,
+        arquivoBase64: e.target.result,
+        status: 'pendente',
+        data: new Date().toISOString()
+      });
+      salvarTodosDados();
+    };
+    reader.readAsDataURL(certificadoArquivoSelecionado);
+  }
+
+  salvarTodosDados();
+
+  showToast('✅ Cadastro realizado com sucesso!', 'success');
+
+  if (tipo === 'mecanico') {
+    showToast('🔧 Faça login para acessar sua área e pagar a mensalidade.', 'success');
+  }
+
+  mostrarLogin();
+
+  document.getElementById('cadNome').value = '';
+  document.getElementById('cadEmail').value = '';
+  document.getElementById('cadSenha').value = '';
+  document.getElementById('cadSenhaConfirm').value = '';
+  document.getElementById('cadCNPJ').value = '';
+  document.getElementById('cadTelefone').value = '';
+  document.getElementById('cadEndereco').value = '';
+  certificadoArquivoSelecionado = null;
+  certificadoArquivoNome = '';
+  document.getElementById('certificadoFileInfo').textContent = 'Nenhum arquivo selecionado';
+  document.getElementById('certificadoInput').value = '';
+}
+
+// ===================== RECUPERAÇÃO DE SENHA =====================
+function abrirRecuperarSenha() {
+  document.getElementById('recuperarOverlay').classList.add('active');
+  document.getElementById('recuperarMensagem').textContent = '';
+  document.getElementById('recuperarEmail').value = '';
+}
+
+function fecharRecuperarSenha() {
+  document.getElementById('recuperarOverlay').classList.remove('active');
+}
+
+function recuperarSenha() {
+  const email = document.getElementById('recuperarEmail').value.trim();
+  const msgDiv = document.getElementById('recuperarMensagem');
+
+  if (!email) {
+    msgDiv.innerHTML = '❌ Informe seu e-mail!';
+    msgDiv.style.color = '#ef4444';
+    return;
+  }
+
+  const usuario = usuarios.find(u => u.email === email);
+  if (!usuario) {
+    msgDiv.innerHTML = '❌ E-mail não encontrado!';
+    msgDiv.style.color = '#ef4444';
+    return;
+  }
+
+  msgDiv.innerHTML = `
+    ✅ Um e-mail foi enviado para <strong>${email}</strong> com as instruções para recuperação de senha.
+    <br><br>
+    <span style="font-size:12px; color:var(--text-secondary);">(Simulação - sua senha é: <strong>${usuario.senha}</strong>)</span>
+  `;
+  msgDiv.style.color = '#10b981';
+
+  showToast('📧 E-mail de recuperação enviado!', 'success');
+}
+
+// ===================== ADMIN DASHBOARD =====================
+function carregarAdminDashboard() {
+  if (!usuarioLogado || usuarioLogado.tipo !== 'admin') return;
+
+  const totalUsuarios = usuarios.filter(u => u.tipo === 'usuario').length;
+  const totalMecanicos = usuarios.filter(u => u.tipo === 'mecanico' && verificarPlanoAtivo(u)).length;
+  const totalAnuncios = anuncios.filter(a => a.status === 'ativo').length;
+  const totalManuais = manuais.length;
+
+  document.getElementById('adminTotalUsuarios').textContent = totalUsuarios;
+  document.getElementById('adminTotalMecanicos').textContent = totalMecanicos;
+  document.getElementById('adminTotalAnuncios').textContent = totalAnuncios;
+  document.getElementById('adminTotalManuais').textContent = totalManuais;
+
+  const pendentes = certificados.filter(c => c.status === 'pendente');
+  const containerCert = document.getElementById('certificadosPendentes');
+  if (pendentes.length === 0) {
+    containerCert.innerHTML = '<div class="empty">Nenhum certificado pendente</div>';
+  } else {
+    containerCert.innerHTML = pendentes.map(c => `
+      <div class="manual-item">
+        <h4>📜 Certificado de ${c.usuarioNome}</h4>
+        <p style="font-size:12px; color:var(--text-secondary);">Arquivo: ${c.arquivoNome}</p>
+        <p style="font-size:12px; color:var(--text-secondary);">Enviado em: ${formatarData(c.data)}</p>
+        ${c.arquivoBase64 ? `<button class="manual-download-btn" onclick="visualizarCertificado('${c.arquivoBase64}', '${c.arquivoNome}')">👁️ Visualizar</button>` : ''}
+        <div style="margin-top:8px; display:flex; gap:8px;">
+          <button class="btn btn-success btn-sm" onclick="aprovarCertificado(${c.id})">✅ Aprovar</button>
+          <button class="btn btn-danger btn-sm" onclick="rejeitarCertificado(${c.id})">❌ Rejeitar</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  const containerManuais = document.getElementById('manuaisAdmin');
+  if (manuais.length === 0) {
+    containerManuais.innerHTML = '<div class="empty">Nenhum manual cadastrado</div>';
+  } else {
+    containerManuais.innerHTML = manuais.map(m => `
+      <div class="manual-item">
+        <h4>📖 ${m.titulo}</h4>
+        <p>Categoria: ${m.categoria}</p>
+        <p>${m.descricao || 'Sem descrição'}</p>
+        <p style="font-size:11px; color:var(--text-secondary);">Por: ${m.usuarioNome || 'Desconhecido'}</p>
+        ${m.arquivoNome ? `<p style="font-size:11px; color:var(--text-secondary);">📄 ${m.arquivoNome}</p>` : ''}
+        <span style="font-size:11px; color:${m.status === 'aprovado' ? '#10b981' : '#f59e0b'};">${m.status === 'aprovado' ? '✅ Aprovado' : '⏳ Pendente'}</span>
+        ${m.status === 'pendente' ? `
+          <div style="margin-top:8px; display:flex; gap:8px;">
+            <button class="btn btn-success btn-sm" onclick="aprovarManual(${m.id})">✅ Aprovar</button>
+            <button class="btn btn-danger btn-sm" onclick="rejeitarManual(${m.id})">❌ Rejeitar</button>
+          </div>
+        ` : ''}
+        ${m.arquivoBase64 ? `<button class="manual-download-btn" onclick="baixarManual(${m.id})">📥 Baixar PDF</button>` : ''}
+      </div>
+    `).join('');
+  }
+
+  const anunciosPendentes = anuncios.filter(a => a.status === 'pendente');
+  const containerAnuncios = document.getElementById('anunciosPendentes');
+  if (anunciosPendentes.length === 0) {
+    containerAnuncios.innerHTML = '<div class="empty">Nenhum anúncio pendente</div>';
+  } else {
+    containerAnuncios.innerHTML = anunciosPendentes.map(a => `
+      <div class="ad-preview">
+        <h4>${a.titulo}</h4>
+        <p>${a.descricao}</p>
+        <p>${a.valor}</p>
+        <div style="margin-top:8px; display:flex; gap:8px;">
+          <button class="btn btn-success btn-sm" onclick="aprovarAnuncio(${a.id})">✅ Aprovar</button>
+          <button class="btn btn-danger btn-sm" onclick="rejeitarAnuncio(${a.id})">❌ Rejeitar</button>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function visualizarCertificado(base64, nome) {
+  const win = window.open();
+  if (base64.includes('pdf')) {
+    win.document.write(`<iframe src="${base64}" style="width:100%;height:100%;border:none;"></iframe>`);
+  } else {
+    win.document.write(`<img src="${base64}" style="max-width:100%;max-height:100vh;display:block;margin:0 auto;">`);
+  }
+}
+
+function aprovarCertificado(id) {
+  const cert = certificados.find(c => c.id === id);
+  if (cert) {
+    cert.status = 'aprovado';
+    const usuario = usuarios.find(u => u.id === cert.usuarioId);
+    if (usuario) {
+      usuario.certificadoStatus = 'aprovado';
+      usuario.certificadoUrl = cert.arquivoBase64;
+    }
+    salvarTodosDados();
+    carregarAdminDashboard();
+    showToast('✅ Certificado aprovado! Mecânico agora está com certificado válido.', 'success');
+  }
+}
+
+function rejeitarCertificado(id) {
+  const cert = certificados.find(c => c.id === id);
+  if (cert) {
+    cert.status = 'rejeitado';
+    const usuario = usuarios.find(u => u.id === cert.usuarioId);
+    if (usuario) {
+      usuario.certificadoStatus = 'rejeitado';
+    }
+    salvarTodosDados();
+    carregarAdminDashboard();
+    showToast('❌ Certificado rejeitado', 'error');
+  }
+}
+
+// ===================== STATUS DO MECÂNICO NO PERFIL =====================
+function atualizarStatusMecanicoPerfil() {
+  if (!usuarioLogado || usuarioLogado.tipo !== 'mecanico') return;
+
+  const usuarioAtual = usuarios.find(u => u.id === usuarioLogado.id);
+  if (usuarioAtual) {
+    usuarioLogado = usuarioAtual;
+  }
+
+  const statusBadge = document.getElementById('statusMecanicoBadgePerfil');
+  const certStatus = document.getElementById('statusCertificadoPerfil');
+  const pagStatus = document.getElementById('statusPagamentoPerfil');
+  const visivelStatus = document.getElementById('statusVisivelPerfil');
+  const diasRestantesEl = document.getElementById('diasRestantesPerfil');
+
+  const planoAtivo = verificarPlanoAtivo(usuarioLogado);
+  const certAprovado = usuarioLogado.certificadoStatus === 'aprovado';
+
+  if (planoAtivo && certAprovado) {
+    statusBadge.textContent = '✅ Ativo';
+    statusBadge.className = 'value ativo';
+  } else if (usuarioLogado.certificadoStatus === 'pendente') {
+    statusBadge.textContent = '⏳ Aguardando Certificado';
+    statusBadge.className = 'value pendente';
+  } else if (usuarioLogado.certificadoStatus === 'rejeitado') {
+    statusBadge.textContent = '❌ Certificado Rejeitado';
+    statusBadge.className = 'value inativo';
+  } else if (!planoAtivo) {
+    statusBadge.textContent = '⛔ Mensalidade Atrasada';
+    statusBadge.className = 'value inativo';
+  } else {
+    statusBadge.textContent = '⏳ Pendente';
+    statusBadge.className = 'value pendente';
+  }
+
+  const statusMap = {
+    'pendente': '⏳ Aguardando aprovação',
+    'aprovado': '✅ Aprovado',
+    'rejeitado': '❌ Rejeitado - Envie um novo'
+  };
+  certStatus.textContent = statusMap[usuarioLogado.certificadoStatus] || 'Não enviado';
+  certStatus.className = 'value ' + (usuarioLogado.certificadoStatus === 'aprovado' ? 'ativo' :
+                                     usuarioLogado.certificadoStatus === 'rejeitado' ? 'inativo' : 'pendente');
+
+  if (planoAtivo) {
+    pagStatus.textContent = '✅ Ativo';
+    pagStatus.className = 'value ativo';
+  } else {
+    pagStatus.textContent = '⛔ Inativo - Pague para ativar';
+    pagStatus.className = 'value inativo';
+  }
+
+  const dias = calcularDiasRestantes(usuarioLogado);
+  diasRestantesEl.textContent = dias > 0 ? `${dias} dias` : '0 dias';
+  diasRestantesEl.className = 'value ' + (dias > 0 ? 'ativo' : 'inativo');
+
+  if (planoAtivo && certAprovado) {
+    visivelStatus.textContent = '✅ Sim - Visível para usuários';
+    visivelStatus.className = 'value ativo';
+  } else {
+    let motivo = '❌ Não - ';
+    if (!planoAtivo) motivo += 'Mensalidade pendente';
+    else if (usuarioLogado.certificadoStatus !== 'aprovado') motivo += 'Certificado não aprovado';
+    else motivo += 'Complete os requisitos';
+    visivelStatus.textContent = motivo;
+    visivelStatus.className = 'value inativo';
+  }
+
+  const certDiv = document.getElementById('certificadoStatusDiv');
+  certDiv.textContent = `📄 Certificado: ${statusMap[usuarioLogado.certificadoStatus] || 'Não enviado'}`;
+  certDiv.className = `certificado-status ${usuarioLogado.certificadoStatus || 'pendente'}`;
+
+  atualizarResumoPagamento();
+}
+
+function atualizarPlanoInfo() {
+  if (!usuarioLogado || usuarioLogado.tipo !== 'mecanico') return;
+
+  const usuarioAtual = usuarios.find(u => u.id === usuarioLogado.id);
+  if (usuarioAtual) {
+    usuarioLogado = usuarioAtual;
+  }
+
+  const planoAtivo = verificarPlanoAtivo(usuarioLogado);
+  const dias = calcularDiasRestantes(usuarioLogado);
+
+  const planoAtivoInfo = document.getElementById('planoAtivoInfo');
+  const planoInativoInfo = document.getElementById('planoInativoInfo');
+  const diasRestantesPlano = document.getElementById('diasRestantesPlano');
+
+  if (planoAtivo) {
+    if (planoAtivoInfo) planoAtivoInfo.style.display = 'block';
+    if (planoInativoInfo) planoInativoInfo.style.display = 'none';
+    if (diasRestantesPlano) diasRestantesPlano.textContent = dias;
+  } else {
+    if (planoAtivoInfo) planoAtivoInfo.style.display = 'none';
+    if (planoInativoInfo) planoInativoInfo.style.display = 'block';
+  }
+}
+
+function atualizarResumoPagamento() {
+  if (!usuarioLogado || usuarioLogado.tipo !== 'mecanico') return;
+
+  const usuarioAtual = usuarios.find(u => u.id === usuarioLogado.id);
+  if (usuarioAtual) {
+    usuarioLogado = usuarioAtual;
+  }
+
+  const planoAtivo = verificarPlanoAtivo(usuarioLogado);
+  const dias = calcularDiasRestantes(usuarioLogado);
+
+  const statusResumoCard = document.getElementById('statusPagamentoResumoCard');
+  const diasResumoCard = document.getElementById('diasRestantesResumoCard');
+  const vencimentoResumoCard = document.getElementById('proximoVencimentoResumoCard');
+  const pagamentoCard = document.querySelector('.pagamento-mensal-card');
+
+  if (planoAtivo) {
+    statusResumoCard.textContent = '✅ Ativo';
+    statusResumoCard.style.color = '#10b981';
+    diasResumoCard.textContent = `${dias} dias`;
+    diasResumoCard.style.color = '#10b981';
+
+    if (usuarioLogado.dataUltimoPagamento) {
+      const dataPagamento = new Date(usuarioLogado.dataUltimoPagamento);
+      const dataExpiracao = new Date(dataPagamento);
+      dataExpiracao.setDate(dataExpiracao.getDate() + DIAS_PLANO);
+      vencimentoResumoCard.textContent = dataExpiracao.toLocaleDateString('pt-BR');
+      vencimentoResumoCard.style.color = '#10b981';
+    } else {
+      vencimentoResumoCard.textContent = '--';
+      vencimentoResumoCard.style.color = '#10b981';
+    }
+
+    if (pagamentoCard) {
+      pagamentoCard.style.borderColor = '#10b981';
+    }
+
+  } else {
+    statusResumoCard.textContent = '⛔ Inativo';
+    statusResumoCard.style.color = '#ef4444';
+    diasResumoCard.textContent = '0 dias';
+    diasResumoCard.style.color = '#ef4444';
+    vencimentoResumoCard.textContent = '--';
+    vencimentoResumoCard.style.color = '#ef4444';
+
+    if (pagamentoCard) {
+      pagamentoCard.style.borderColor = '#ef4444';
+    }
+  }
+
+  const statusPagamento = document.getElementById('statusPagamento');
+  const paymentBox = document.getElementById('paymentInfoBox');
+  const paymentTitle = document.getElementById('paymentStatusTitle');
+
+  if (planoAtivo) {
+    statusPagamento.textContent = `✅ Ativo - ${dias} dias restantes`;
+    statusPagamento.style.color = '#166534';
+    paymentBox.className = 'payment-info';
+    paymentTitle.textContent = '📅 Plano Ativo';
+  } else {
+    statusPagamento.textContent = '⛔ Inativo - Renove para continuar';
+    statusPagamento.style.color = '#dc2626';
+    paymentBox.className = 'payment-info pagamento-pendente';
+    paymentTitle.textContent = '⚠️ Plano Inativo!';
+  }
+}
+
+// ===================== CONFIRMAR PAGAMENTO =====================
+function confirmarPagamento() {
+  if (!usuarioLogado) {
+    showToast('❌ Usuário não logado!', 'error');
+    return;
+  }
+
+  if (usuarioLogado.tipo === 'mecanico') {
+    if (metodoPagamentoSelecionado === 'cartao') {
+      const numero = document.getElementById('cartaoNumero').value.trim();
+      const validade = document.getElementById('cartaoValidade').value.trim();
+      const cvv = document.getElementById('cartaoCvv').value.trim();
+      const nome = document.getElementById('cartaoNome').value.trim();
+      const cpf = document.getElementById('cartaoCpf').value.trim();
+
+      if (!numero || !validade || !cvv || !nome || !cpf) {
+        showToast('❌ Preencha todos os dados do cartão!', 'error');
+        return;
+      }
+    }
+
+    const agora = new Date();
+    usuarioLogado.pagamentoEmDia = true;
+    usuarioLogado.dataUltimoPagamento = agora.toISOString();
+
+    const idx = usuarios.findIndex(u => u.id === usuarioLogado.id);
+    if (idx !== -1) {
+      usuarios[idx] = { ...usuarioLogado };
+    }
+
+    salvarTodosDados();
+
+    fecharPagamento();
+
+    document.getElementById('cartaoNumero').value = '';
+    document.getElementById('cartaoValidade').value = '';
+    document.getElementById('cartaoCvv').value = '';
+    document.getElementById('cartaoNome').value = '';
+    document.getElementById('cartaoCpf').value = '';
+
+    const usuarioAtualizado = usuarios.find(u => u.id === usuarioLogado.id);
+    if (usuarioAtualizado) {
+      usuarioLogado = usuarioAtualizado;
+    }
+
+    atualizarStatusMecanicoPerfil();
+    atualizarPlanoInfo();
+    atualizarResumoPagamento();
+    carregarDadosMecanico();
+    carregarListaMecanicosAgendamento();
+
+    const diasRestantes = calcularDiasRestantes(usuarioLogado);
+    showToast(`✅ Pagamento realizado com sucesso! Plano ativo por ${diasRestantes} dias.`, 'success');
+
+    console.log('💳 Pagamento registrado:', {
+      usuario: usuarioLogado.nome,
+      data: agora.toISOString(),
+      diasRestantes: diasRestantes
+    });
+
+  } else {
+    fecharPagamento();
+    showToast('✅ Pagamento realizado com sucesso!', 'success');
+  }
+}
+
+function abrirPagamento() {
+  if (!usuarioLogado) return;
+  document.getElementById('pagamentoOverlay').classList.add('active');
+  metodoPagamentoSelecionado = 'pix';
+  mostrarMetodoPagamento('pix');
+}
+
+function fecharPagamento() {
+  document.getElementById('pagamentoOverlay').classList.remove('active');
+}
+
+function selecionarMetodoPagamento(el, metodo) {
+  document.querySelectorAll('.metodo-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  metodoPagamentoSelecionado = metodo;
+  mostrarMetodoPagamento(metodo);
+}
+
+function mostrarMetodoPagamento(metodo) {
+  document.getElementById('pixInfo').classList.toggle('hidden', metodo !== 'pix');
+  document.getElementById('cartaoInfo').classList.toggle('hidden', metodo !== 'cartao');
+  document.getElementById('boletoInfo').classList.toggle('hidden', metodo !== 'boleto');
+}
+
+function copiarChavePix() {
+  const chave = 'carmanual@pagamento.com';
+  navigator.clipboard.writeText(chave).then(() => {
+    showToast('📋 Chave PIX copiada!', 'success');
+  }).catch(() => {
+    const input = document.createElement('input');
+    input.value = chave;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
+    showToast('📋 Chave PIX copiada!', 'success');
+  });
+}
+
+function verificarAcessoMecanico() {
+  if (!usuarioLogado || usuarioLogado.tipo !== 'mecanico') return true;
+
+  const planoAtivo = verificarPlanoAtivo(usuarioLogado);
+
+  if (!planoAtivo) {
+    showToast('⛔ Seu plano está inativo. Renove para acessar esta funcionalidade.', 'error');
+    return false;
+  }
+  return true;
+}
+
+// ===================== ADMIN - APROVAR MANUAIS E ANÚNCIOS =====================
+function aprovarManual(id) {
+  const manual = manuais.find(m => m.id === id);
+  if (manual) {
+    manual.status = 'aprovado';
+    salvarTodosDados();
+    carregarAdminDashboard();
+    carregarManuais();
+    showToast('✅ Manual aprovado!', 'success');
+  }
+}
+
+function rejeitarManual(id) {
+  const manual = manuais.find(m => m.id === id);
+  if (manual) {
+    manual.status = 'rejeitado';
+    salvarTodosDados();
+    carregarAdminDashboard();
+    carregarManuais();
+    showToast('❌ Manual rejeitado', 'error');
+  }
+}
+
+function aprovarAnuncio(id) {
+  const anuncio = anuncios.find(a => a.id === id);
+  if (anuncio) {
+    anuncio.status = 'ativo';
+    salvarTodosDados();
+    carregarAdminDashboard();
+    showToast('✅ Anúncio aprovado!', 'success');
+  }
+}
+
+function rejeitarAnuncio(id) {
+  const anuncio = anuncios.find(a => a.id === id);
+  if (anuncio) {
+    anuncio.status = 'rejeitado';
+    salvarTodosDados();
+    carregarAdminDashboard();
+    showToast('❌ Anúncio rejeitado', 'error');
+  }
+}
+
+// ===================== RELATÓRIOS =====================
+function aplicarFiltroPeriodo(dias) {
+  const hoje = new Date();
+  const dataInicio = new Date(hoje);
+  dataInicio.setDate(hoje.getDate() - dias);
+  document.getElementById('dataInicio').value = dataInicio.toISOString().split('T')[0];
+  document.getElementById('dataFim').value = hoje.toISOString().split('T')[0];
+  filtroDataInicio = dataInicio;
+  filtroDataFim = hoje;
+  const tipo = document.getElementById('relatorioContainer').dataset.tipo || 'usuarios';
+  gerarRelatorio(tipo);
+}
+
+function aplicarFiltroPersonalizado() {
+  const inicio = document.getElementById('dataInicio').value;
+  const fim = document.getElementById('dataFim').value;
+  if (!inicio || !fim) { showToast('Selecione as datas!', 'error'); return; }
+  filtroDataInicio = new Date(inicio);
+  filtroDataFim = new Date(fim);
+  const tipo = document.getElementById('relatorioContainer').dataset.tipo || 'usuarios';
+  gerarRelatorio(tipo);
+}
+
+function gerarRelatorio(tipo) {
+  const container = document.getElementById('relatorioContainer');
+  container.dataset.tipo = tipo;
+  let html = '';
+
+  if (tipo === 'usuarios') {
+    const users = usuarios.filter(u => u.tipo === 'usuario');
+    html = `<h4>👤 Usuários (${users.length})</h4>`;
+    users.forEach(u => {
+      html += `<div class="relatorio-item"><span>${u.nome}</span> - ${u.email}</div>`;
+    });
+  } else if (tipo === 'mecanicos') {
+    const mecs = usuarios.filter(u => u.tipo === 'mecanico');
+    html = `<h4>🔧 Mecânicos (${mecs.length})</h4>`;
+    mecs.forEach(m => {
+      const ativo = verificarPlanoAtivo(m);
+      const status = ativo && m.certificadoStatus === 'aprovado' ? '✅ Ativo' : '⛔ Inativo';
+      html += `<div class="relatorio-item"><span>${m.nome}</span> - ${m.cnpj || 'Sem CNPJ'} - ${status}</div>`;
+    });
+  } else if (tipo === 'pagamentos') {
+    const pagos = usuarios.filter(u => u.tipo === 'mecanico' && verificarPlanoAtivo(u));
+    html = `<h4>💰 Mecânicos com plano ativo (${pagos.length})</h4>`;
+    pagos.forEach(p => {
+      const dias = calcularDiasRestantes(p);
+      html += `<div class="relatorio-item"><span>${p.nome}</span> - ${dias} dias restantes</div>`;
+    });
+  } else if (tipo === 'anuncios') {
+    const ativos = anuncios.filter(a => a.status === 'ativo');
+    html = `<h4>📢 Anúncios Ativos (${ativos.length})</h4>`;
+    ativos.forEach(a => {
+      html += `<div class="relatorio-item"><span>${a.titulo}</span> - ${a.valor}</div>`;
+    });
+  } else if (tipo === 'avaliacoes') {
+    html = `<h4>⭐ Avaliações (${avaliacoes.length})</h4>`;
+    if (avaliacoes.length === 0) {
+      html += '<div class="empty">Nenhuma avaliação encontrada</div>';
+    } else {
+      avaliacoes.forEach(a => {
+        const mecanico = usuarios.find(u => u.id === a.mecanicoId);
+        html += `<div class="relatorio-item">
+          <span>${a.clienteNome}</span> - ${'⭐'.repeat(a.nota)} (${a.nota}) - ${a.comentario}
+          <span class="data">Para: ${mecanico ? mecanico.nome : 'Desconhecido'}</span>
+        </div>`;
+      });
+    }
+  }
+
+  container.innerHTML = html;
+}
+
+// ===================== DADOS DO USUÁRIO =====================
+function carregarDadosUsuario() {
+  if (!usuarioLogado || usuarioLogado.tipo !== 'usuario') return;
+
+  carregarAnunciosUsuario();
+  carregarVeiculo();
+  carregarAlertas();
+  carregarMonitoramento();
+  carregarHistorico();
+  carregarAgendamentosUsuario();
+  carregarListaMecanicosAgendamento();
+  carregarListaMecanicosAvaliacao();
+  carregarManuais();
+}
+
+function carregarAnunciosUsuario() {
+  const container = document.getElementById('anunciosContainer');
+  const ativos = anuncios.filter(a => a.status === 'ativo');
+  if (ativos.length === 0) {
+    container.innerHTML = '<div class="empty">Nenhum anúncio disponível</div>';
+  } else {
+    container.innerHTML = ativos.map(a => `
+      <div class="ad-preview">
+        <h4>${a.titulo}</h4>
+        <p style="font-size:13px; color:var(--text-secondary);">${a.descricao}</p>
+        <p style="font-weight:600; color:#f59e0b;">${a.valor || 'Preço sob consulta'}</p>
+        <span style="font-size:11px; color:#10b981;">✅ Ativo</span>
+      </div>
+    `).join('');
+  }
+}
+
+function carregarVeiculo() {
+  const veiculo = veiculos.find(v => v.usuarioId === usuarioLogado.id);
+  const container = document.getElementById('veiculoInfo');
+  if (!veiculo) {
+    container.innerHTML = '<div class="empty">Nenhum veículo cadastrado</div>';
+    document.getElementById('veiculoModelo').value = '';
+    document.getElementById('veiculoPlaca').value = '';
+    document.getElementById('veiculoAno').value = '';
+    document.getElementById('veiculoKm').value = '';
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="veiculo-card">
+      <div class="modelo">🚗 ${veiculo.modelo}</div>
+      <div class="info">Placa: ${veiculo.placa || 'N/A'} • Ano: ${veiculo.ano || 'N/A'}</div>
+      <div class="info">📊 ${veiculo.km ? parseInt(veiculo.km).toLocaleString() : '0'} km</div>
+    </div>
+  `;
+
+  document.getElementById('veiculoModelo').value = veiculo.modelo || '';
+  document.getElementById('veiculoPlaca').value = veiculo.placa || '';
+  document.getElementById('veiculoAno').value = veiculo.ano || '';
+  document.getElementById('veiculoKm').value = veiculo.km || '';
+}
+
+function salvarVeiculo() {
+  if (!usuarioLogado) return;
+
+  const modelo = document.getElementById('veiculoModelo').value.trim();
+  const placa = document.getElementById('veiculoPlaca').value.trim();
+  const ano = document.getElementById('veiculoAno').value;
+  const km = document.getElementById('veiculoKm').value;
+
+  if (!modelo) {
+    showToast('❌ Informe o modelo do veículo!', 'error');
+    return;
+  }
+
+  const idx = veiculos.findIndex(v => v.usuarioId === usuarioLogado.id);
+  const veiculo = { usuarioId: usuarioLogado.id, modelo, placa, ano, km };
+
+  if (idx === -1) {
+    veiculos.push(veiculo);
+  } else {
+    veiculos[idx] = veiculo;
+  }
+
+  salvarTodosDados();
+  carregarVeiculo();
+  carregarMonitoramento();
+  showToast('✅ Veículo salvo com sucesso!', 'success');
+}
+
+function carregarAlertas() {
+  const container = document.getElementById('alertasContainer');
+  const veiculo = veiculos.find(v => v.usuarioId === usuarioLogado.id);
+  const alertas = alertasManutencao[usuarioLogado.id] || { km: null, dias: null };
+
+  if (!veiculo) {
+    container.innerHTML = '<div class="empty">Cadastre um veículo para ver alertas</div>';
+    return;
+  }
+
+  let alertasList = [];
+  const kmAtual = parseInt(veiculo.km) || 0;
+
+  if (alertas.km && kmAtual >= alertas.km) {
+    alertasList.push({ tipo: 'critico', icon: '🔴', msg: `⚠️ KM atingiu ${parseInt(alertas.km).toLocaleString()} km! Faça a manutenção.` });
+  }
+
+  const ultimasManutencoes = historicoManutencao.filter(h => h.usuarioId === usuarioLogado.id);
+  if (ultimasManutencoes.length > 0) {
+    const ultima = ultimasManutencoes[0];
+    const diasDesde = Math.floor((new Date() - new Date(ultima.data)) / (1000 * 60 * 60 * 24));
+    if (alertas.dias && diasDesde >= alertas.dias) {
+      alertasList.push({ tipo: 'atencao', icon: '🟡', msg: `⏰ ${diasDesde} dias desde a última manutenção (${ultima.tipo})` });
+    }
+  }
+
+  if (alertasList.length === 0) {
+    container.innerHTML = '<div class="empty">✅ Nenhum alerta no momento</div>';
+  } else {
+    container.innerHTML = alertasList.map(a => `
+      <div class="alerta-item ${a.tipo}">
+        <span class="icon">${a.icon}</span>
+        <span class="msg">${a.msg}</span>
+      </div>
+    `).join('');
+
+    if (alertasList.some(a => a.tipo === 'critico')) {
+      tocarAlertaSonoro();
+    }
+  }
+}
+
+function carregarMonitoramento() {
+  const veiculo = veiculos.find(v => v.usuarioId === usuarioLogado.id);
+
+  if (!veiculo) {
+    document.getElementById('monitorKm').textContent = '--';
+    document.getElementById('monitorTemp').textContent = '--';
+    document.getElementById('monitorCombustivel').textContent = '--';
+    document.getElementById('monitorRevisao').textContent = '--';
+    return;
+  }
+
+  document.getElementById('monitorKm').textContent = veiculo.km ? (parseFloat(veiculo.km) / 100).toFixed(1) + ' km/l' : '--';
+  document.getElementById('monitorTemp').textContent = (Math.random() * 20 + 80).toFixed(1) + '°C';
+  document.getElementById('monitorCombustivel').textContent = (Math.random() * 40 + 30).toFixed(0) + '%';
+
+  const kmAtual = parseInt(veiculo.km) || 0;
+  const proximaRevisao = Math.ceil((kmAtual + 5000) / 1000) * 1000;
+  document.getElementById('monitorRevisao').textContent = `${proximaRevisao.toLocaleString()} km`;
+}
+
+function tocarAlertaSonoro() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 800;
+    gain.gain.value = 0.2;
+    osc.start();
+    setTimeout(() => osc.stop(), 500);
+    setTimeout(() => {
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.frequency.value = 1000;
+      gain2.gain.value = 0.2;
+      osc2.start();
+      setTimeout(() => osc2.stop(), 500);
+    }, 500);
+  } catch(e) {}
+}
+
+function configurarAlertas() {
+  if (!usuarioLogado) return;
+
+  const km = document.getElementById('alertaKm').value;
+  const dias = document.getElementById('alertaDias').value;
+
+  if (!km && !dias) {
+    showToast('❌ Informe pelo menos um valor!', 'error');
+    return;
+  }
+
+  if (!alertasManutencao[usuarioLogado.id]) {
+    alertasManutencao[usuarioLogado.id] = {};
+  }
+
+  if (km) alertasManutencao[usuarioLogado.id].km = parseInt(km);
+  if (dias) alertasManutencao[usuarioLogado.id].dias = parseInt(dias);
+
+  salvarTodosDados();
+  carregarAlertas();
+  showToast('✅ Alertas configurados!', 'success');
+}
+
+// ===================== HISTÓRICO =====================
+function salvarHistorico() {
+  if (!usuarioLogado || usuarioLogado.tipo !== 'usuario') return;
+
+  const tipo = document.getElementById('histTipo').value;
+  const km = document.getElementById('histKm').value;
+  const data = document.getElementById('histData').value;
+  const obs = document.getElementById('histObs').value.trim();
+
+  if (!km || !data) {
+    showToast('❌ Preencha KM e data!', 'error');
+    return;
+  }
+
+  historicoManutencao.unshift({
+    id: Date.now(),
+    usuarioId: usuarioLogado.id,
+    tipo,
+    km: parseInt(km),
+    data,
+    obs,
+    dataRegistro: new Date().toISOString()
+  });
+
+  salvarTodosDados();
+  carregarHistorico();
+  carregarAlertas();
+
+  document.getElementById('histKm').value = '';
+  document.getElementById('histData').value = '';
+  document.getElementById('histObs').value = '';
+
+  showToast('✅ Manutenção registrada!', 'success');
+  tocarAlertaSonoro();
+}
+
+function carregarHistorico() {
+  const container = document.getElementById('listaHistorico');
+  const historico = historicoManutencao.filter(h => h.usuarioId === usuarioLogado.id);
+
+  if (historico.length === 0) {
+    container.innerHTML = '<div class="empty">Nenhuma manutenção registrada</div>';
+    return;
+  }
+
+  container.innerHTML = historico.map(h => `
+    <div class="agendamento-item">
+      <div><span class="cliente">🔧 ${h.tipo}</span></div>
+      <div style="font-size:13px; color:var(--text-secondary);">📅 ${formatarData(h.data)} • ${h.km.toLocaleString()} km</div>
+      ${h.obs ? `<div style="font-size:12px; color:var(--text-secondary);">${h.obs}</div>` : ''}
+      <span style="font-size:11px; color:#10b981;">✅ Registrado</span>
+      <button class="btn btn-danger btn-sm" onclick="removerHistorico(${h.id})" style="width:auto; margin-top:4px;">🗑️ Remover</button>
+    </div>
+  `).join('');
+}
+
+function removerHistorico(id) {
+  if (!confirm('Remover esta manutenção?')) return;
+  historicoManutencao = historicoManutencao.filter(h => h.id !== id);
+  salvarTodosDados();
+  carregarHistorico();
+  showToast('🗑️ Removido!', 'success');
+}
+
+// ===================== MANUAIS COM PDF =====================
+function selecionarArquivoManual(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (file.type !== 'application/pdf') {
+    showToast('❌ Por favor, selecione um arquivo PDF!', 'error');
+    event.target.value = '';
+    return;
+  }
+
+  if (file.size > 10 * 1024 * 1024) {
+    showToast('❌ O arquivo deve ter no máximo 10MB!', 'error');
+    event.target.value = '';
+    return;
+  }
+
+  manualArquivoSelecionado = file;
+  manualArquivoNome = file.name;
+  document.getElementById('manualFileInfo').innerHTML = `
+    ✅ <strong>${file.name}</strong> (${(file.size / 1024).toFixed(1)} KB)
+    <span class="remove-file" onclick="removerArquivoManual(event)">✕ remover</span>
+  `;
+}
+
+function removerArquivoManual(event) {
+  event.stopPropagation();
+  manualArquivoSelecionado = null;
+  manualArquivoNome = '';
+  document.getElementById('manualFileInfo').textContent = 'Nenhum arquivo selecionado';
+  document.getElementById('manualPdfInput').value = '';
+}
+
+function carregarManuais() {
+  if (!usuarioLogado) return;
+
+  const meusManuais = manuais.filter(m => m.usuarioId === usuarioLogado.id);
+  const containerMeus = document.getElementById('meusManuais');
+  if (meusManuais.length === 0) {
+    containerMeus.innerHTML = '<div class="empty">Nenhum manual cadastrado</div>';
+  } else {
+    containerMeus.innerHTML = meusManuais.map(m => `
+      <div class="manual-item">
+        <h4>📖 ${m.titulo}</h4>
+        <p>Categoria: ${m.categoria}</p>
+        ${m.descricao ? `<p>${m.descricao}</p>` : ''}
+        ${m.arquivoNome ? `<p style="font-size:11px; color:var(--text-secondary);">📄 ${m.arquivoNome}</p>` : ''}
+        <span style="font-size:11px; color:${m.status === 'aprovado' ? '#10b981' : '#f59e0b'};">${m.status === 'aprovado' ? '✅ Aprovado' : '⏳ Pendente'}</span>
+        ${m.arquivoBase64 ? `<button class="manual-download-btn" onclick="baixarManual(${m.id})">📥 Baixar PDF</button>` : ''}
+      </div>
+    `).join('');
+  }
+
+  const disponiveis = manuais.filter(m => m.status === 'aprovado');
+  const containerDisponiveis = document.getElementById('manuaisDisponiveis');
+  if (disponiveis.length === 0) {
+    containerDisponiveis.innerHTML = '<div class="empty">Nenhum manual disponível</div>';
+  } else {
+    containerDisponiveis.innerHTML = disponiveis.map(m => `
+      <div class="manual-item">
+        <h4>📖 ${m.titulo}</h4>
+        <p>Categoria: ${m.categoria}</p>
+        ${m.descricao ? `<p>${m.descricao}</p>` : ''}
+        <span style="font-size:11px; color:var(--text-secondary);">Por: ${m.usuarioNome || 'Desconhecido'}</span>
+        ${m.arquivoBase64 ? `<button class="manual-download-btn" onclick="baixarManual(${m.id})">📥 Baixar PDF</button>` : ''}
+      </div>
+    `).join('');
+  }
+}
+
+function baixarManual(id) {
+  const manual = manuais.find(m => m.id === id);
+  if (!manual || !manual.arquivoBase64) {
+    showToast('❌ Arquivo não disponível para download', 'error');
+    return;
+  }
+
+  try {
+    const link = document.createElement('a');
+    link.href = manual.arquivoBase64;
+    link.download = manual.arquivoNome || `manual_${manual.titulo}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('📥 Download iniciado!', 'success');
+  } catch(e) {
+    showToast('❌ Erro ao baixar o arquivo', 'error');
+  }
+}
+
+function cadastrarManual() {
+  if (!usuarioLogado) return;
+
+  if (usuarioLogado.tipo === 'mecanico' && !verificarAcessoMecanico()) {
+    return;
+  }
+
+  const titulo = document.getElementById('manualTitulo').value.trim();
+  const categoria = document.getElementById('manualCategoria').value;
+  const descricao = document.getElementById('manualDesc').value.trim();
+
+  if (!titulo) {
+    showToast('❌ Informe o título do manual!', 'error');
+    return;
+  }
+
+  if (!manualArquivoSelecionado) {
+    showToast('❌ Selecione um arquivo PDF!', 'error');
+    return;
+  }
+
+  const isAdmin = usuarioLogado.tipo === 'admin';
+  const status = isAdmin ? 'aprovado' : 'pendente';
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const arquivoBase64 = e.target.result;
+
+    const novoManual = {
+      id: Date.now(),
+      titulo,
+      categoria,
+      descricao: descricao || '',
+      usuarioId: usuarioLogado.id,
+      usuarioNome: usuarioLogado.nome,
+      status: status,
+      data: new Date().toISOString(),
+      arquivoNome: manualArquivoNome,
+      arquivoBase64: arquivoBase64
+    };
+
+    manuais.push(novoManual);
+    salvarTodosDados();
+    carregarManuais();
+
+    document.getElementById('manualTitulo').value = '';
+    document.getElementById('manualDesc').value = '';
+    manualArquivoSelecionado = null;
+    manualArquivoNome = '';
+    document.getElementById('manualFileInfo').textContent = 'Nenhum arquivo selecionado';
+    document.getElementById('manualPdfInput').value = '';
+
+    if (isAdmin) {
+      carregarAdminDashboard();
+      showToast('✅ Manual aprovado diretamente!', 'success');
+    } else {
+      showToast('✅ Manual enviado para aprovação!', 'success');
+    }
+  };
+
+  reader.onerror = function() {
+    showToast('❌ Erro ao ler o arquivo', 'error');
+  };
+
+  reader.readAsDataURL(manualArquivoSelecionado);
+}
+
+// ===================== LISTA DE MECÂNICOS (APENAS PARA USUÁRIOS) =====================
+function calcularMediaAvaliacao(mecanicoId) {
+  const avals = avaliacoes.filter(a => a.mecanicoId === mecanicoId);
+  if (avals.length === 0) return { media: 0, total: 0 };
+  const media = avals.reduce((s, a) => s + a.nota, 0) / avals.length;
+  return { media, total: avals.length };
+}
+
+function gerarEstrelas(media) {
+  if (media === 0) return '☆☆☆☆☆';
+  const arredondado = Math.round(media);
+  return '★'.repeat(arredondado) + '☆'.repeat(5 - arredondado);
+}
+
+function carregarListaMecanicosAgendamento() {
+  if (!usuarioLogado || usuarioLogado.tipo !== 'usuario') return;
+
+  const select = document.getElementById('mecanicoSelect');
+  select.innerHTML = '<option value="">-- Selecione um mecânico --</option>';
+
+  const mecanicos = usuarios.filter(u =>
+    u.tipo === 'mecanico' &&
+    u.certificadoStatus === 'aprovado' &&
+    verificarPlanoAtivo(u)
+  );
+
+  if (mecanicos.length === 0) {
+    select.innerHTML = '<option value="">Nenhum mecânico disponível no momento</option>';
+    return;
+  }
+
+  mecanicos.forEach(m => {
+    const { media, total } = calcularMediaAvaliacao(m.id);
+    const estrelas = gerarEstrelas(media);
+    const option = document.createElement('option');
+    option.value = m.id;
+    option.textContent = `${m.nome} - ${estrelas} (${media > 0 ? media.toFixed(1) : 'Sem avaliações'})`;
+    if (m.especialidades) {
+      option.textContent += ` - ${m.especialidades}`;
+    }
+    select.appendChild(option);
+  });
+}
+
+function onMecanicoSelecionado() {
+  document.getElementById('mecanicoHora').innerHTML = '<option value="">Selecione uma data primeiro</option>';
+  document.getElementById('mecanicoData').value = '';
+}
+
+function carregarListaMecanicosAvaliacao() {
+  if (!usuarioLogado || usuarioLogado.tipo !== 'usuario') return;
+
+  const select = document.getElementById('avaliarMecanicoSelect');
+  select.innerHTML = '<option value="">-- Selecione um mecânico --</option>';
+
+  const agendamentosConcluidos = agendamentos.filter(a =>
+    a.clienteId === usuarioLogado.id &&
+    (a.status === 'confirmado' || a.status === 'concluido')
+  );
+
+  const mecanicosIds = [...new Set(agendamentosConcluidos.map(a => a.mecanicoId))];
+
+  const avaliados = avaliacoes.filter(a => a.clienteId === usuarioLogado.id).map(a => a.mecanicoId);
+  const mecanicosDisponiveis = mecanicosIds.filter(id => !avaliados.includes(id));
+
+  if (mecanicosDisponiveis.length === 0) {
+    select.innerHTML = '<option value="">Nenhum mecânico disponível para avaliação</option>';
+    document.getElementById('avaliacaoMensagem').classList.add('hidden');
+    return;
+  }
+
+  document.getElementById('avaliacaoMensagem').classList.remove('hidden');
+
+  mecanicosDisponiveis.forEach(id => {
+    const m = usuarios.find(u => u.id === id);
+    if (m) {
+      const { media, total } = calcularMediaAvaliacao(m.id);
+      const estrelas = gerarEstrelas(media);
+      const option = document.createElement('option');
+      option.value = m.id;
+      option.textContent = `${m.nome} - ${estrelas} (${media > 0 ? media.toFixed(1) : 'Sem avaliações'})`;
+      select.appendChild(option);
+    }
+  });
+}
+
+// ===================== MECÂNICO (Agendamentos) =====================
+function atualizarHorariosDisponiveis() {
+  const data = document.getElementById('mecanicoData').value;
+  const select = document.getElementById('mecanicoHora');
+  const mecId = document.getElementById('mecanicoSelect').value;
+
+  select.innerHTML = '<option value="">Selecione um horário</option>';
+
+  if (!data || !mecId) {
+    select.innerHTML = '<option value="">Selecione mecânico e data</option>';
+    return;
+  }
+
+  const horarios = ['08:00', '09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'];
+
+  const ocupados = agendamentos.filter(a =>
+    a.data === data &&
+    a.mecanicoId == mecId &&
+    (a.status === 'confirmado' || a.status === 'pendente')
+  ).map(a => a.hora);
+
+  let temDisponivel = false;
+  horarios.forEach(h => {
+    if (!ocupados.includes(h)) {
+      const opt = document.createElement('option');
+      opt.value = h;
+      opt.textContent = h;
+      select.appendChild(opt);
+      temDisponivel = true;
+    }
+  });
+
+  if (!temDisponivel) {
+    select.innerHTML = '<option value="">Nenhum horário disponível</option>';
+  }
+}
+
+// ===================== AGENDAR MECÂNICO (APENAS USUÁRIOS) =====================
+function agendarMecanico() {
+  if (!usuarioLogado || usuarioLogado.tipo !== 'usuario') {
+    showToast('❌ Apenas usuários podem agendar serviços!', 'error');
+    return;
+  }
+
+  const mecId = document.getElementById('mecanicoSelect').value;
+  const data = document.getElementById('mecanicoData').value;
+  const hora = document.getElementById('mecanicoHora').value;
+  const obs = document.getElementById('mecanicoObs').value.trim();
+
+  if (!mecId || !data || !hora) {
+    showToast('❌ Selecione mecânico, data e horário!', 'error');
+    return;
+  }
+
+  if (hora.includes('Nenhum') || hora.includes('disponível')) {
+    showToast('❌ Selecione um horário disponível!', 'error');
+    return;
+  }
+
+  const mecanico = usuarios.find(u => u.id == mecId);
+  if (!mecanico) return;
+
+  if (!verificarPlanoAtivo(mecanico)) {
+    showToast('❌ Este mecânico não está com o plano ativo no momento.', 'error');
+    return;
+  }
+
+  const conflito = agendamentos.find(a =>
+    a.mecanicoId == mecId &&
+    a.data === data &&
+    a.hora === hora &&
+    (a.status === 'confirmado' || a.status === 'pendente')
+  );
+  if (conflito) {
+    showToast('❌ Horário indisponível!', 'error');
+    return;
+  }
+
+  agendamentos.push({
+    id: Date.now(),
+    mecanicoId: parseInt(mecId),
+    clienteId: usuarioLogado.id,
+    clienteNome: usuarioLogado.nome,
+    data,
+    hora,
+    descricao: obs || 'Sem descrição',
+    status: 'pendente'
+  });
+
+  salvarTodosDados();
+  carregarAgendamentosUsuario();
+  showToast('✅ Agendamento solicitado! Aguarde confirmação.', 'success');
+
+  document.getElementById('mecanicoData').value = '';
+  document.getElementById('mecanicoHora').innerHTML = '<option value="">Selecione uma data primeiro</option>';
+  document.getElementById('mecanicoObs').value = '';
+  document.getElementById('mecanicoSelect').value = '';
+
+  carregarListaMecanicosAvaliacao();
+}
+
+function carregarAgendamentosUsuario() {
+  const container = document.getElementById('meusAgendamentosUsuario');
+  if (!container) return;
+  const meusAgendamentos = agendamentos.filter(a => a.clienteId === usuarioLogado.id);
+
+  if (meusAgendamentos.length === 0) {
+    container.innerHTML = '<div class="empty">Nenhum agendamento</div>';
+    return;
+  }
+
+  container.innerHTML = meusAgendamentos.map(a => {
+    const statusMap = {
+      'pendente': '⏳ Pendente',
+      'confirmado': '✅ Confirmado',
+      'cancelado': '❌ Cancelado',
+      'concluido': '✅ Concluído'
+    };
+
+    let motivoHtml = '';
+    if (a.status === 'cancelado' && a.motivoRecusa) {
+      motivoHtml = `
+        <div class="motivo-recusa">
+          <strong>📌 Motivo da recusa:</strong>
+          ${a.motivoRecusa}
+        </div>
+      `;
+    }
+
+    return `
+      <div class="agendamento-item">
+        <div><span class="cliente">🔧 ${a.mecanicoId ? (usuarios.find(u => u.id === a.mecanicoId)?.nome || 'Mecânico') : 'Mecânico'}</span></div>
+        <div style="font-size:13px; color:var(--text-secondary);">📅 ${formatarData(a.data)} às ${a.hora}</div>
+        <div style="font-size:12px; color:var(--text-secondary);">${a.descricao}</div>
+        <div style="margin-top:4px;">
+          <span class="status ${a.status}">${statusMap[a.status] || a.status}</span>
+        </div>
+        ${motivoHtml}
+        ${a.status === 'confirmado' ? `
+          <button class="btn btn-success btn-sm" onclick="finalizarAgendamento(${a.id})" style="width:auto; margin-top:4px;">✅ Finalizar</button>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function finalizarAgendamento(id) {
+  const agend = agendamentos.find(a => a.id === id);
+  if (agend) {
+    agend.status = 'concluido';
+    salvarTodosDados();
+    carregarAgendamentosUsuario();
+    carregarListaMecanicosAvaliacao();
+    showToast('✅ Agendamento concluído!', 'success');
+  }
+}
+
+// ===================== AVALIAÇÕES (APENAS USUÁRIOS COM AGENDAMENTO) =====================
+function setRating(valor) {
+  ratingSelecionado = valor;
+  document.querySelectorAll('#ratingStars .star').forEach((s, i) => {
+    s.classList.toggle('active', i < valor);
+  });
+}
+
+function avaliarMecanico() {
+  if (!usuarioLogado || usuarioLogado.tipo !== 'usuario') {
+    showToast('❌ Apenas usuários podem avaliar mecânicos!', 'error');
+    return;
+  }
+
+  const mecId = document.getElementById('avaliarMecanicoSelect').value;
+  const comentario = document.getElementById('avaliacaoComentario').value.trim();
+
+  if (!mecId || ratingSelecionado === 0 || !comentario) {
+    showToast('❌ Selecione mecânico, nota e escreva um comentário!', 'error');
+    return;
+  }
+
+  const agendou = agendamentos.some(a =>
+    a.clienteId === usuarioLogado.id &&
+    a.mecanicoId === parseInt(mecId) &&
+    (a.status === 'confirmado' || a.status === 'concluido')
+  );
+
+  if (!agendou) {
+    showToast('❌ Você só pode avaliar mecânicos com quem já agendou!', 'error');
+    return;
+  }
+
+  const jaAvaliou = avaliacoes.some(a => a.clienteId === usuarioLogado.id && a.mecanicoId === parseInt(mecId));
+  if (jaAvaliou) {
+    showToast('⚠️ Você já avaliou este mecânico!', 'error');
+    return;
+  }
+
+  avaliacoes.push({
+    id: Date.now(),
+    mecanicoId: parseInt(mecId),
+    clienteId: usuarioLogado.id,
+    clienteNome: usuarioLogado.nome,
+    nota: ratingSelecionado,
+    comentario,
+    data: new Date().toISOString()
+  });
+
+  salvarTodosDados();
+  showToast('⭐ Avaliação enviada com sucesso!', 'success');
+
+  document.getElementById('avaliarMecanicoSelect').value = '';
+  document.getElementById('avaliacaoComentario').value = '';
+  ratingSelecionado = 0;
+  document.querySelectorAll('#ratingStars .star').forEach(s => s.classList.remove('active'));
+
+  carregarListaMecanicosAvaliacao();
+  carregarListaMecanicosAgendamento();
+}
+
+// ===================== RECUSA DE AGENDAMENTO (COM MOTIVO) =====================
+function abrirRecusa(id) {
+  recusaAgendamentoId = id;
+  document.getElementById('motivoRecusa').value = '';
+  document.getElementById('recusaOverlay').classList.add('active');
+}
+
+function fecharRecusa() {
+  recusaAgendamentoId = null;
+  document.getElementById('motivoRecusa').value = '';
+  document.getElementById('recusaOverlay').classList.remove('active');
+}
+
+function confirmarRecusa() {
+  const motivo = document.getElementById('motivoRecusa').value.trim();
+
+  if (!motivo) {
+    showToast('❌ Informe o motivo da recusa!', 'error');
+    return;
+  }
+
+  if (recusaAgendamentoId === null) {
+    showToast('❌ Erro ao processar recusa', 'error');
+    return;
+  }
+
+  const agend = agendamentos.find(a => a.id === recusaAgendamentoId);
+  if (agend) {
+    agend.status = 'cancelado';
+    agend.motivoRecusa = motivo;
+    salvarTodosDados();
+    carregarAgendamentosMecanico();
+    carregarAgendamentosUsuario();
+    fecharRecusa();
+    showToast('❌ Agendamento recusado com motivo informado!', 'error');
+  } else {
+    showToast('❌ Agendamento não encontrado', 'error');
+  }
+}
+
+// ===================== MECÂNICO DASHBOARD =====================
+function carregarDadosMecanico() {
+  if (!usuarioLogado || usuarioLogado.tipo !== 'mecanico') return;
+
+  const agendaSalva = localStorage.getItem('agenda_' + usuarioLogado.id);
+  if (agendaSalva) {
+    const agenda = JSON.parse(agendaSalva);
+    diasSelecionados = agenda.dias || [];
+    horariosSelecionados = agenda.horarios || [];
+    atualizarBotoesAgenda();
+  }
+
+  atualizarEstatisticasMecanico();
+  carregarAgendamentosMecanico();
+  carregarAnunciosMecanico();
+  carregarAvaliacoesMecanico();
+  carregarManuais();
+  atualizarStatusMecanicoPerfil();
+  atualizarPlanoInfo();
+  atualizarResumoPagamento();
+}
+
+function atualizarBotoesAgenda() {
+  document.querySelectorAll('.day-btn').forEach(btn => {
+    const dia = btn.dataset.dia;
+    btn.classList.toggle('active', diasSelecionados.includes(dia));
+  });
+  document.querySelectorAll('.hour-btn').forEach(btn => {
+    const hora = btn.dataset.hora;
+    btn.classList.toggle('active', horariosSelecionados.includes(hora));
+  });
+}
+
+function toggleDia(el) {
+  el.classList.toggle('active');
+  const dia = el.dataset.dia;
+  const idx = diasSelecionados.indexOf(dia);
+  if (idx === -1) diasSelecionados.push(dia);
+  else diasSelecionados.splice(idx, 1);
+}
+
+function toggleHora(el) {
+  el.classList.toggle('active');
+  const hora = el.dataset.hora;
+  const idx = horariosSelecionados.indexOf(hora);
+  if (idx === -1) horariosSelecionados.push(hora);
+  else horariosSelecionados.splice(idx, 1);
+}
+
+function salvarAgenda() {
+  if (!usuarioLogado) return;
+
+  if (!verificarAcessoMecanico()) return;
+
+  const agenda = { dias: diasSelecionados, horarios: horariosSelecionados };
+  localStorage.setItem('agenda_' + usuarioLogado.id, JSON.stringify(agenda));
+  showToast('✅ Agenda salva com sucesso!', 'success');
+}
+
+function atualizarEstatisticasMecanico() {
+  if (!usuarioLogado || usuarioLogado.tipo !== 'mecanico') return;
+
+  const meusAgendamentos = agendamentos.filter(a => a.mecanicoId === usuarioLogado.id);
+  document.getElementById('totalAgendamentos').textContent = meusAgendamentos.length;
+
+  const minhasAvaliacoes = avaliacoes.filter(a => a.mecanicoId === usuarioLogado.id);
+  const media = minhasAvaliacoes.length > 0 ?
+    minhasAvaliacoes.reduce((s, a) => s + a.nota, 0) / minhasAvaliacoes.length : 0;
+  document.getElementById('mediaAvaliacao').textContent = media.toFixed(1);
+
+  const meusAnuncios = anuncios.filter(a => a.usuarioId === usuarioLogado.id && a.status === 'ativo');
+  document.getElementById('totalAnuncios').textContent = meusAnuncios.length;
+
+  const ganhos = meusAnuncios.length * 29.90;
+  document.getElementById('totalGanhos').textContent = `R$ ${ganhos.toFixed(2)}`;
+}
+
+function carregarAgendamentosMecanico() {
+  if (!usuarioLogado) return;
+
+  const meusAgendamentos = agendamentos.filter(a => a.mecanicoId === usuarioLogado.id && a.status === 'pendente');
+  const container = document.getElementById('agendamentosPendentes');
+  if (!container) return;
+
+  if (meusAgendamentos.length === 0) {
+    container.innerHTML = '<div class="empty">Nenhum agendamento pendente</div>';
+    return;
+  }
+
+  container.innerHTML = meusAgendamentos.map(a => `
+    <div class="agendamento-item">
+      <div><span class="cliente">👤 ${a.clienteNome}</span></div>
+      <div style="font-size:13px; color:var(--text-secondary);">📅 ${formatarData(a.data)} às ${a.hora}</div>
+      <div style="font-size:12px; color:var(--text-secondary);">${a.descricao}</div>
+      <div style="margin-top:4px;"><span class="status pendente">⏳ Pendente</span></div>
+      <div class="acoes">
+        <button class="btn btn-success" onclick="confirmarAgendamentoMecanico(${a.id})">✅ Aceitar</button>
+        <button class="btn btn-danger" onclick="abrirRecusa(${a.id})">❌ Recusar</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function confirmarAgendamentoMecanico(id) {
+  if (!verificarAcessoMecanico()) return;
+
+  const agend = agendamentos.find(a => a.id === id);
+  if (agend) {
+    agend.status = 'confirmado';
+    salvarTodosDados();
+    carregarAgendamentosMecanico();
+    atualizarEstatisticasMecanico();
+    carregarAgendamentosUsuario();
+    showToast('✅ Agendamento confirmado!', 'success');
+  }
+}
+
+function carregarAnunciosMecanico() {
+  if (!usuarioLogado) return;
+
+  const meusAnuncios = anuncios.filter(a => a.usuarioId === usuarioLogado.id);
+  const container = document.getElementById('meusAnuncios');
+
+  if (meusAnuncios.length === 0) {
+    container.innerHTML = '<div class="empty">Nenhum anúncio ativo</div>';
+  } else {
+    container.innerHTML = meusAnuncios.map(a => `
+      <div class="ad-preview">
+        <h4>${a.titulo}</h4>
+        <p style="font-size:13px; color:var(--text-secondary);">${a.descricao}</p>
+        <p style="font-weight:600; color:#f59e0b;">${a.valor || 'Preço sob consulta'}</p>
+        <span style="font-size:11px; color:${a.status === 'ativo' ? '#10b981' : '#f59e0b'};">${a.status === 'ativo' ? '✅ Ativo' : '⏳ Pendente'}</span>
+      </div>
+    `).join('');
+  }
+}
+
+function criarAnuncio() {
+  if (!usuarioLogado || usuarioLogado.tipo !== 'mecanico') return;
+
+  if (!verificarAcessoMecanico()) return;
+
+  if (usuarioLogado.certificadoStatus !== 'aprovado') {
+    showToast('❌ Você precisa ter o certificado aprovado para criar anúncios!', 'error');
+    return;
+  }
+
+  const titulo = document.getElementById('anuncioTitulo').value.trim();
+  const descricao = document.getElementById('anuncioDesc').value.trim();
+  const valor = document.getElementById('anuncioValor').value.trim();
+
+  if (!titulo || !descricao) {
+    showToast('❌ Preencha título e descrição!', 'error');
+    return;
+  }
+
+  if (!confirm('💰 Pagar R$ 29,90 para publicar este anúncio?')) return;
+
+  anuncios.push({
+    id: Date.now(),
+    usuarioId: usuarioLogado.id,
+    titulo,
+    descricao,
+    valor: valor || 'Sob consulta',
+    status: 'pendente',
+    data: new Date().toISOString()
+  });
+
+  salvarTodosDados();
+  carregarAnunciosMecanico();
+  atualizarEstatisticasMecanico();
+
+  document.getElementById('anuncioTitulo').value = '';
+  document.getElementById('anuncioDesc').value = '';
+  document.getElementById('anuncioValor').value = '';
+
+  showToast('✅ Anúncio enviado para aprovação!', 'success');
+}
+
+function carregarAvaliacoesMecanico() {
+  if (!usuarioLogado) return;
+
+  const minhasAvaliacoes = avaliacoes.filter(a => a.mecanicoId === usuarioLogado.id);
+  const container = document.getElementById('avaliacoesRecebidas');
+  if (!container) return;
+
+  if (minhasAvaliacoes.length === 0) {
+    container.innerHTML = '<div class="empty">Nenhuma avaliação ainda</div>';
+  } else {
+    container.innerHTML = minhasAvaliacoes.slice(-5).reverse().map(a => `
+      <div style="padding:10px 0; border-bottom:1px solid var(--border-color);">
+        <div><strong>${a.clienteNome}</strong> - ${'⭐'.repeat(a.nota)} (${a.nota})</div>
+        <div style="font-size:13px; color:var(--text-secondary);">${a.comentario}</div>
+        <div style="font-size:11px; color:var(--text-secondary);">${formatarData(a.data)}</div>
+      </div>
+    `).join('');
+  }
+}
+
+// ===================== IA (Diagnósticos) =====================
+function diagnosticarFoto(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (usuarioLogado && usuarioLogado.tipo === 'mecanico' && !verificarAcessoMecanico()) {
+    event.target.value = '';
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    document.getElementById('imgPreview').src = e.target.result;
+    document.getElementById('previewFoto').style.display = 'block';
+
+    const problemas = ['Motor', 'Freios', 'Suspensão', 'Elétrica', 'Transmissão'];
+    const gravidades = ['baixa', 'media', 'alta'];
+    const problema = problemas[Math.floor(Math.random() * problemas.length)];
+    const gravidade = gravidades[Math.floor(Math.random() * gravidades.length)];
+    const diagnosticosLista = [
+      'Recomenda-se verificação completa do sistema.',
+      'Possível desgaste nas peças. Sugere-se substituição.',
+      'Manutenção preventiva necessária com urgência.',
+      'Pode ser problema elétrico. Verificar fusíveis e cabos.',
+      'Recomenda-se alinhamento e balanceamento.'
+    ];
+    const diagnostico = diagnosticosLista[Math.floor(Math.random() * diagnosticosLista.length)];
+
+    const resultado = { problema, gravidade, diagnostico };
+    salvarDiagnostico(resultado);
+
+    document.getElementById('resultadoFoto').innerHTML = `
+      <div class="diagnostico-result">
+        <p><strong>🔍 Diagnóstico:</strong> ${diagnostico}</p>
+        <p><strong>Problema:</strong> ${problema}</p>
+        <p><strong>Gravidade:</strong> <span class="gravidade ${gravidade}">${gravidade.toUpperCase()}</span></p>
+        <p style="font-size:12px; color:var(--text-secondary); margin-top:8px;">⚠️ Diagnóstico preliminar. Consulte um profissional.</p>
+      </div>
+    `;
+
+    document.getElementById('ultimoDiagnostico').innerHTML = `
+      <div class="diagnostico-result">
+        <p><strong>🔍 Diagnóstico:</strong> ${diagnostico}</p>
+        <p><strong>Problema:</strong> ${problema}</p>
+        <p><strong>Gravidade:</strong> <span class="gravidade ${gravidade}">${gravidade.toUpperCase()}</span></p>
+      </div>
+    `;
+
+    showToast('🤖 Diagnóstico concluído!', 'success');
+  };
+  reader.readAsDataURL(file);
+}
+
+function diagnosticarTexto() {
+  const descricao = document.getElementById('descricaoProblema').value.trim();
+  const modelo = document.getElementById('modeloVeiculo').value.trim();
+
+  if (!descricao) {
+    showToast('❌ Descreva o problema!', 'error');
+    return;
+  }
+
+  if (usuarioLogado && usuarioLogado.tipo === 'mecanico' && !verificarAcessoMecanico()) {
+    return;
+  }
+
+  const problemas = ['Motor', 'Freios', 'Suspensão', 'Elétrica', 'Transmissão', 'Ar Condicionado', 'Bateria'];
+  const gravidades = ['baixa', 'media', 'alta'];
+  const problema = problemas[Math.floor(Math.random() * problemas.length)];
+  const gravidade = gravidades[Math.floor(Math.random() * gravidades.length)];
+  const diagnosticosLista = [
+    'Recomenda-se verificação completa do sistema.',
+    'Possível desgaste nas peças. Sugere-se substituição.',
+    'Manutenção preventiva necessária com urgência.',
+    'Pode ser problema elétrico. Verificar fusíveis e cabos.',
+    'Recomenda-se alinhamento e balanceamento.'
+  ];
+  const diagnostico = diagnosticosLista[Math.floor(Math.random() * diagnosticosLista.length)];
+
+  const resultado = { problema, gravidade, diagnostico };
+  salvarDiagnostico(resultado);
+
+  document.getElementById('resultadoTexto').innerHTML = `
+    <div class="diagnostico-result">
+      <p><strong>🔍 Diagnóstico:</strong> ${diagnostico}</p>
+      <p><strong>Problema:</strong> ${problema}</p>
+      <p><strong>Gravidade:</strong> <span class="gravidade ${gravidade}">${gravidade.toUpperCase()}</span></p>
+      ${modelo ? `<p style="font-size:12px; color:var(--text-secondary);">🚗 Veículo: ${modelo}</p>` : ''}
+      <p style="font-size:12px; color:var(--text-secondary); margin-top:8px;">⚠️ Diagnóstico baseado na descrição. Consulte um profissional.</p>
+    </div>
+  `;
+
+  document.getElementById('ultimoDiagnostico').innerHTML = `
+    <div class="diagnostico-result">
+      <p><strong>🔍 Diagnóstico:</strong> ${diagnostico}</p>
+      <p><strong>Problema:</strong> ${problema}</p>
+      <p><strong>Gravidade:</strong> <span class="gravidade ${gravidade}">${gravidade.toUpperCase()}</span></p>
+    </div>
+  `;
+
+  showToast('🤖 Diagnóstico concluído!', 'success');
+}
+
+function salvarDiagnostico(resultado) {
+  if (!usuarioLogado) return;
+  diagnosticos.push({
+    id: Date.now(),
+    usuarioId: usuarioLogado.id,
+    ...resultado,
+    data: new Date().toISOString()
+  });
+  salvarTodosDados();
+  carregarDiagnosticos();
+}
+
+function carregarDiagnosticos() {
+  if (!usuarioLogado) return;
+
+  const meusDiagnosticos = diagnosticos.filter(d => d.usuarioId === usuarioLogado.id);
+  const container = document.getElementById('historicoDiagnosticos');
+
+  if (meusDiagnosticos.length === 0) {
+    container.innerHTML = '<div class="empty">Nenhum diagnóstico realizado</div>';
+  } else {
+    container.innerHTML = meusDiagnosticos.slice(-5).reverse().map(d => `
+      <div style="padding:10px 0; border-bottom:1px solid var(--border-color);">
+        <div style="font-size:12px; color:var(--text-secondary);">${formatarData(d.data)}</div>
+        <div><strong>Problema:</strong> ${d.problema}</div>
+        <div><strong>Gravidade:</strong> <span class="gravidade ${d.gravidade}">${d.gravidade.toUpperCase()}</span></div>
+        <div><strong>Diagnóstico:</strong> ${d.diagnostico}</div>
+      </div>
+    `).join('');
+  }
+}
+
+// ===================== PERFIL =====================
+function salvarPerfil() {
+  if (!usuarioLogado) return;
+
+  const nome = document.getElementById('perfilNome').value.trim();
+  const email = document.getElementById('perfilEmail').value.trim();
+  const telefone = document.getElementById('perfilTelefone').value.trim();
+  const senha = document.getElementById('perfilSenha').value;
+
+  if (!nome || !email) {
+    showToast('❌ Nome e e-mail são obrigatórios!', 'error');
+    return;
+  }
+
+  usuarioLogado.nome = nome;
+  usuarioLogado.email = email;
+  usuarioLogado.telefone = telefone;
+  if (senha) usuarioLogado.senha = senha;
+
+  const idx = usuarios.findIndex(u => u.id === usuarioLogado.id);
+  if (idx !== -1) usuarios[idx] = usuarioLogado;
+
+  salvarTodosDados();
+  showToast('✅ Dados atualizados com sucesso!', 'success');
+
+  document.getElementById('displayNome').textContent = nome;
+  document.getElementById('displayEmail').textContent = email;
+  document.getElementById('headerUser').textContent = `👤 ${nome}`;
+  document.getElementById('perfilSenha').value = '';
+}
+
+function selecionarCertificadoPerfil(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('❌ O arquivo deve ter no máximo 5MB!', 'error');
+    event.target.value = '';
+    return;
+  }
+
+  certificadoPerfilArquivoSelecionado = file;
+  certificadoPerfilArquivoNome = file.name;
+  document.getElementById('certificadoPerfilFileInfo').innerHTML = `
+    ✅ <strong>${file.name}</strong> (${(file.size / 1024).toFixed(1)} KB)
+    <span class="remove-file" onclick="removerCertificadoPerfil()">✕ remover</span>
+  `;
+}
+
+function removerCertificadoPerfil() {
+  certificadoPerfilArquivoSelecionado = null;
+  certificadoPerfilArquivoNome = '';
+  document.getElementById('certificadoPerfilFileInfo').textContent = 'Nenhum arquivo selecionado';
+  document.getElementById('certificadoPerfilInput').value = '';
+}
+
+function enviarCertificadoPerfil() {
+  if (!usuarioLogado || usuarioLogado.tipo !== 'mecanico') return;
+
+  if (!certificadoPerfilArquivoSelecionado) {
+    showToast('❌ Selecione um arquivo de certificado!', 'error');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    certificados = certificados.filter(c => c.usuarioId !== usuarioLogado.id);
+
+    certificados.push({
+      id: Date.now(),
+      usuarioId: usuarioLogado.id,
+      usuarioNome: usuarioLogado.nome,
+      arquivoNome: certificadoPerfilArquivoNome,
+      arquivoBase64: e.target.result,
+      status: 'pendente',
+      data: new Date().toISOString()
+    });
+
+    usuarioLogado.certificadoStatus = 'pendente';
+    const idx = usuarios.findIndex(u => u.id === usuarioLogado.id);
+    if (idx !== -1) {
+      usuarios[idx] = usuarioLogado;
+    }
+
+    salvarTodosDados();
+    atualizarStatusMecanicoPerfil();
+
+    certificadoPerfilArquivoSelecionado = null;
+    certificadoPerfilArquivoNome = '';
+    document.getElementById('certificadoPerfilFileInfo').textContent = 'Nenhum arquivo selecionado';
+    document.getElementById('certificadoPerfilInput').value = '';
+
+    showToast('📄 Certificado enviado para aprovação!', 'success');
+  };
+  reader.readAsDataURL(certificadoPerfilArquivoSelecionado);
+}
+
+// ===================== CONFIGURAÇÕES =====================
+function abrirConfiguracoes() {
+  document.getElementById('configOverlay').classList.add('active');
+}
+
+function fecharConfiguracoes() {
+  document.getElementById('configOverlay').classList.remove('active');
+}
+
+function mudarFonte(tamanho) {
+  fonteAtual = tamanho;
+  const sizes = { pequeno: '12px', medio: '16px', grande: '20px' };
+  document.querySelectorAll('.content, .card, input, textarea, select, button, .nav-item, .header, .container').forEach(el => {
+    el.style.fontSize = sizes[tamanho] || '14px';
+  });
+  localStorage.setItem('carmanual_fonte', tamanho);
+}
+
+function mudarCor(cor, el) {
+  corAtual = cor;
+  const colors = { azul: '#3b82f6', verde: '#10b981', vermelho: '#ef4444', roxo: '#8b5cf6', amarelo: '#f59e0b', rosa: '#ec4899' };
+  document.documentElement.style.setProperty('--accent', colors[cor]);
+  document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  localStorage.setItem('carmanual_cor', cor);
+}
+
+function toggleTheme() {
+  temaAtual = temaAtual === 'claro' ? 'escuro' : 'claro';
+  document.documentElement.setAttribute('data-theme', temaAtual === 'escuro' ? 'dark' : '');
+  localStorage.setItem('carmanual_tema', temaAtual);
+}
+
+// ===================== NAVEGAÇÃO =====================
+function showTab(tabName, element) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('tab-' + tabName).classList.add('active');
+  if (element) element.classList.add('active');
+}
+
+// ===================== UTILITÁRIOS =====================
+function formatarData(dataStr) {
+  if (!dataStr) return '';
+  try {
+    const d = new Date(dataStr);
+    return d.toLocaleDateString('pt-BR');
+  } catch(e) {
+    return dataStr;
+  }
+}
+
+function showToast(mensagem, tipo = '') {
+  const toast = document.getElementById('toast');
+  toast.textContent = mensagem;
+  toast.className = 'toast ' + tipo;
+  toast.classList.add('show');
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ===================== VERIFICAÇÃO PERIÓDICA DE PLANOS =====================
+setInterval(() => {
+  verificarTodosPlanos();
+  if (usuarioLogado && usuarioLogado.tipo === 'mecanico') {
+    const updated = usuarios.find(u => u.id === usuarioLogado.id);
+    if (updated) {
+      const ativoAntes = verificarPlanoAtivo(usuarioLogado);
+      usuarioLogado = updated;
+      const ativoDepois = verificarPlanoAtivo(usuarioLogado);
+      if (ativoAntes !== ativoDepois) {
+        atualizarStatusMecanicoPerfil();
+        atualizarPlanoInfo();
+        atualizarResumoPagamento();
+        if (!ativoDepois) {
+          showToast('⚠️ Seu plano expirou! Renove para continuar usando o sistema.', 'error');
+        }
+      }
+    }
+  }
+}, 60000);
+
+// ===================== INICIALIZAÇÃO =====================
+inicializarDados();
+
+const fonteSalva = localStorage.getItem('carmanual_fonte');
+if (fonteSalva) mudarFonte(fonteSalva);
+
+const corSalva = localStorage.getItem('carmanual_cor');
+if (corSalva) {
+  const colors = { azul: '#3b82f6', verde: '#10b981', vermelho: '#ef4444', roxo: '#8b5cf6', amarelo: '#f59e0b', rosa: '#ec4899' };
+  document.documentElement.style.setProperty('--accent', colors[corSalva]);
+}
+
+const temaSalvo = localStorage.getItem('carmanual_tema');
+if (temaSalvo === 'escuro') {
+  temaAtual = 'escuro';
+  document.documentElement.setAttribute('data-theme', 'dark');
+}
+
+console.log('🔧 CarManual - Sistema Completo');
+console.log('👑 Admin: admin@carmanual.com / admin123');
+console.log('🔧 Mecânico: mecanico@teste.com / 123456');
+console.log('👤 Usuário: usuario@teste.com / 123456');
+</script>
+</body>
+</html>

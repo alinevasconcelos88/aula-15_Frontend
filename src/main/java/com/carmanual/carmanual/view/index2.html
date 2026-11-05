@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CRUD de Tarefas</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div class="container my-4">
+    <h1 class="text-center mb-4">CRUD de Tarefas (Usuário ID = 1)</h1>
+
+    <!-- Formulário para adicionar/editar -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <form id="taskForm">
+          <input type="hidden" id="taskId" />
+          <div class="mb-3">
+            <label for="description" class="form-label">Descrição da Tarefa</label>
+            <input type="text" class="form-control" id="description" required minlength="1" maxlength="255">
+          </div>
+          <button type="submit" class="btn btn-primary">Salvar Tarefa</button>
+          <button type="button" class="btn btn-secondary" id="btnCancel" style="display:none;">Cancelar</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Lista de tarefas -->
+    <div id="loading" class="text-center my-3">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Carregando...</span>
+      </div>
+    </div>
+
+    <table class="table table-striped table-bordered">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Descrição</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tasksList"></tbody>
+    </table>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="script2.js"></script>
+</body>
+</html>
